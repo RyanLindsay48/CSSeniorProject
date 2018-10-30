@@ -3,8 +3,8 @@
 from datetime import datetime as dt
 from datetime import timedelta
 from time import sleep
-import Motion as motion
-import Camera as camera
+import motion as motion
+import camera as camera
 import requests
 import argparse
 import os
