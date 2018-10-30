@@ -100,8 +100,6 @@ def main(args):
                                 filename = dir + '/image-' + cur_time.strftime('%H:%M:%S') + '.jpg'
                                 camera.capture_picture(cameraObj, filename, cur_time)
                                 payload = {
-                                        'username': username,
-                                        'password': password,
                                         'media': open(filename, 'rb')
                                 }
                                 requests.post(imageURL, files=payload)
