@@ -72,8 +72,8 @@ def main(args):
         password = args.password
 
         # Setup url to send information to
-        imageURL = 'http://55.91.107.223:5000/upload'
-        resetURL = 'http://55.91.107.223:5000/resetPi'
+        imageURL = 'http://52.91.107.223:5000/upload'
+        resetURL = 'http://52.91.107.223:5000/resetPi'
 
         while True:
                 # Check for motion
