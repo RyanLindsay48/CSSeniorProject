@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 import RPi.GPIO as GPIO
-import time
+from time import sleep
 
 
 def motion_detected():
@@ -10,14 +10,13 @@ def motion_detected():
         GPIO.setup(11, GPIO.IN)         # Read output from PIR motion sensor
 
         while True:
-                input = 1  # 0 for Low  :  1 for HIGH
-                           # Set to high for testing purposes
+                mode = GPIO.input(11)  # 0 for Low  :  1 for HIGH
 
                 # If the sensor is reporting HIGH then it see's something
-                if input == 1:
+                if mode == 1:
+                        #print 'Intruder detected!'
                         return
-                time.sleep(0.1)
-
+                sleep(0.1)
 
 
 #-----------------------------------------------------------------------------
