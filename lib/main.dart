@@ -1,11 +1,12 @@
-
-import 'dart:async';
+import 'dart:async' show Future;
 import 'dart:io';
 
+import 'package:actualhousehawk/HomeScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'CreateAccountScreen.dart';
 import 'ResetPassword.dart';
+import 'User.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
@@ -36,53 +37,40 @@ class HouseHawk extends StatelessWidget {
 class LoginScreen extends StatelessWidget {
   String email = '';
   String password = '';
-  String userEmail = '';
-  String userPassword = '';
-  List data;
+  bool invalidLogin = true;
 
-      //Method to insert data
-      Future<HttpClientResponse> foo() async{
-        Map<String,dynamic> jsonMap = {"email_address": "dildos@rowan.edu", "fname": "dildo","lname":"dildo","password":"dildo"};//,"phone_id":12345678910};
-          Response r = await post('http://52.91.107.223:5000/create',body: json.encode(jsonMap));
-          print(r.statusCode);
+  //Method to recieve data
+  Future<User> fetchPost(BuildContext context) async {
+    print('hello');
+    //final response =await http.get('http://52.91.107.223:5000/user');
 
+    final response = await http.get(
+        'http://52.91.107.223:5000/user/login?email=' + email);
+    print(response.statusCode);
+    print('did I get this far');
+    if (response.statusCode == 200) {
+      print('did work');
+      print(response.body);
 
-        }
+      User user = new User.fromJson(json.decode(response.body));
+      print('Email: ' + user.email_address);
+      print('fname: ' + user.fname);
+      print('lname: ' + user.lname);
+      print('password: ' + user.password);
+      print(user.user_id.toString());
 
-    //Method to recieve data
-    Future<Post> fetchPost() async{ //String em, String pass
-//      em = email_address;
-//      pass = password;
-      print('hello');
-      //final response =await http.get('http://52.91.107.223:5000/user');
-      final response =await http.get('http://52.91.107.223:5000/user/email_address/' + email);
-      print(response.statusCode);
-      print('did I get this far');
-      if(response.statusCode == 200){
-        print('did work');
-        print(response.body);
-        //Post.fromJson(json.decode(response.body));
-        //Post user = json.decode(response.body);
-//        print('Email: ' +response.body.email_address);
-//        print('fname: ' +user.fname);
-//        print('lname: ' +user.lname);
-//        print('password: ' + user.password);
-//        print(user.user_id.toString());
-//        print(response.body[3]);
-        if(response.body[0] == email && response.body[3] == password){
-          print('User successfully logged in');
-        }
-        else{
-          print('somehthing is wrong');
-        }
-
-        return Post.fromJson(json.decode(response.body));
-      } else {
-        print('didnt work');
-        throw Exception('Failed to load post');
-
+      if (user.email_address == email && user.password == password) {
+        print('User successfully logged in');
+        Navigator.push(context,new MaterialPageRoute(builder: (context) => new HomeScreen()));
+        return User.fromJson(json.decode(response.body));
       }
     }
+    else {
+      print('invalid Login please try again');
+
+      throw Exception('Failed to load post');
+    }
+  }
 
   // This widget is the root of your application.
   @override
@@ -122,15 +110,12 @@ class LoginScreen extends StatelessWidget {
                   print('Password is:  $text');
                   password = text;
                 },
-
-
-
               ),
               //Page navigation does not currently work
               RaisedButton(child: Text('Login'),
                 //onPressed: ()=> fetchPost(),
                  //onPressed: ()=> fetchPost(email_address,password),//{
-                  onPressed: ()=> foo(),
+                  onPressed: ()=> fetchPost(context),
 //                      Navigator.push(
 //                          context, new MaterialPageRoute(builder: (context) => new DummyEndpoint()),
 //                        )
@@ -150,59 +135,11 @@ class LoginScreen extends StatelessWidget {
                     );
                   }
               ),
-//              new Text ("Email : " +Post.email_address),
-//              new Text ("fname : " +data[1]),
-//              new Text ("lname : " +data[2]),
-//              new Text ("Password : " +data[3]),
-//              new Text ("phone_id : " +data[4]),
-//              new Text ("user_id : " +data[5]),
-//              new Text ("fname : $fname"),
             ],
           )
         )
       )
     );
   }
+
 }
-
-class Post {
-  final String email_address;
-  final String fname;
-  final String lname;
-  final String password;
-  final int user_id;
-
-  Post({this.email_address, this.fname, this.lname, this.password, this.user_id});
-
-//  Post.fromJson(Map<String, dynamic> json)
-//    : email_address: json['email_address'],
-//      fname: json['fname'],
-//      lname: json['lname'],
-//      password: json['password'],
-//      user_id: json['user_id'];
-
-  factory Post.fromJson(Map<String, dynamic> json) {
-    return Post(
-      email_address: json['email_address'],
-      fname: json['fname'],
-      lname: json['lname'],
-      password: json['password'],
-      user_id: json['user_id'],
-    );
-  }
-
-  Map<String, dynamic> toJson() =>
-      {
-        'email_address': email_address,
-        'fname': fname,
-        'lname': lname,
-        'password': password,
-        'user_id': user_id
-      };
-
-
-  }
-
-
-
-
