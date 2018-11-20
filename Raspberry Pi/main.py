@@ -83,7 +83,7 @@ def main(args):
                 if debug > 0:
                         print('Motion detected!')
                 
-                #while True:
+                while True:
               	# Wait until correct time to take picture
                         cur_time = dt.now() # Does this do anything?
                         wait(args.delay_type, args.multiplier)
@@ -121,7 +121,8 @@ def main(args):
                         #break
 
               		# Remove when reset signal testing works
-              		#break
+                        if True:
+                                break
 
         # Release camera resources
         cameraObj.close()
