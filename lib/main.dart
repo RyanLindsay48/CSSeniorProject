@@ -42,10 +42,9 @@ class LoginScreen extends StatelessWidget {
   //Method to recieve data
   Future<User> fetchPost(BuildContext context) async {
     print('hello');
-    //final response =await http.get('http://52.91.107.223:5000/user');
 
     final response = await http.get(
-        'http://52.91.107.223:5000/user/login?email=' + email);
+        'http://ip/user/login?email=' + email);
     print(response.statusCode);
     print('did I get this far');
     if (response.statusCode == 200) {
