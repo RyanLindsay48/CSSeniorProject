@@ -52,37 +52,40 @@ def wait(delay_type, multiplier):
 
 
 #-----------------------------------------------------------------------------
+debug = 0  # debug flag. Different levels activate different print statements
 
 def main(args):
         # Gather user specific  information
         pi_id = getSerial()
         username = args.username
         password = args.password
-
         # Setup url to send information to
-        imageURL = ''
+        imageURL = 'http://52.91.107.223:5000/exposure/picture'
         resetURL = ''
 
         # Tests for argument parsing
-        # print args.username
-        # print args.password
-        # print args.delay_type
-        # print args.multiplier
-        # print args.location
-
+        if debug > 1:
+                print(args.username)
+                print(args.password)
+                print(args.delay_type)
+                print(args.multiplier)
+                print(args.location)
+        
+        
         # Initialize camera object
         cameraObj = camera.setup()
 
         while True:
-           # Check for motion
+                # Check for motion, will not continue until motion is detected
                 motion.motion_detected()
 
-           # Debugging print
-           print 'Motion detected!'
-
-                while True:
+                # Debugging print
+                if debug > 0:
+                        print('Motion detected!')
+                
+                #while True:
               	# Wait until correct time to take picture
-                        cur_time = dt.now()
+                        cur_time = dt.now() # Does this do anything?
                         wait(args.delay_type, args.multiplier)
 
                         # Begin recording images
@@ -95,27 +98,30 @@ def main(args):
 
                         # Capture picture and send it to endpoint
                         filename = dir + '/image-' + cur_time.strftime('%H:%M:%S') + '.jpg'
-              					camera.capture_picture(cameraObj, filename, cur_time)
+                        print("" + filename)
+                        camera.capture_picture(cameraObj, filename, cur_time)
                         payload = {
-                               'photo': open(filename, 'rb')
-              					}
-                        r = requests.post(imageURL, files=payload, auth=(username, password))
+                                'photo': open(filename, 'rb')
+              		}
+                        r = requests.post(imageURL, files=payload, timeout=5)
 
-             						# Debugging prints
-              					print 'Image file was sent to endpoint'
-              					print 'Endpoint: ' + imageURL
-              					print 'Image name: ' + filename
-
+             		# Debugging prints
+                        if debug > 0:
+                                print('Image file was sent to endpoint')
+                                print('Endpoint: ' + imageURL)
+                                print('Image name: ' + filename)
+                        
+                        
                         # Check for reset signal from the user
-              					# r = requests.get(resetURL, auth=(username, password))
-              					# signal_reset = r.json()['reset']
-              					# if signal_reset =  true
-              					# # Reset signal back to default
-              					# requests.put(resetURL, auth=(username, password), false)
-                        #      break
+              		#r = requests.get(resetURL, auth=(username, password))
+              		#signal_reset = r.json()['reset']
+              		#if signal_reset =  true
+              		# Reset signal back to default
+              		#requests.put(resetURL, auth=(username, password), false)
+                        #break
 
-              					# Remove when reset signal testing works
-              					break
+              		# Remove when reset signal testing works
+              		#break
 
         # Release camera resources
         cameraObj.close()
@@ -126,13 +132,13 @@ if __name__=="__main__":
         parser = argparse.ArgumentParser(description="Main script arg parser")
         parser.add_argument('-d', default='sec', type=str,
                             action='store', dest='delay_type',
-                  					help='Type of delay requested')
+                  	    help='Type of delay requested')
         parser.add_argument('-l', default='/Pictures/', type=str,
                             action='store', dest='location',
                             help='Location to save image files to on rpi')
         parser.add_argument('-m', default=5, type=int,
-                  					action='store', dest='multiplier',
-                  					help='Time multiplier for delay')
+                  	    action='store', dest='multiplier',
+                  	    help='Time multiplier for delay')
         parser.add_argument('-p', default='password', type=str,
                             action='store', dest='password',
                             help='User specific password for user auth')
