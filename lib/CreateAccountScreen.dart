@@ -40,7 +40,7 @@ class CreateAccountScreen extends StatelessWidget {
     //final response =await http.get('http://52.91.107.223:5000/user');
 
     final response = await http.get(
-        'http://52.91.107.223:5000/user',
+        'http://ip/user',
             headers: {'email_address' : email});
     //print(response.statusCode);
     print('did I get this far');
