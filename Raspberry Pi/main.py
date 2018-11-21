@@ -24,7 +24,7 @@ def getSerial():
            for line in f:
               if line[0:6]=='Serial':
                 cpuserial = line[10:26]
-              f.close()
+           f.close()
         except:
            cpuserial = "ERROR000000000"
 
@@ -56,13 +56,15 @@ debug = 0  # debug flag. Different levels activate different print statements
 
 def main(args):
         # Gather user specific  information
-        pi_id = getSerial()
+        pi_serial = getSerial()
         username = args.username
         password = args.password
         # Setup url to send information to
         imageURL = 'http://52.91.107.223:5000/exposure/picture'
         resetURL = ''
-
+        snURL = 'http://52.91.107.223:5000/pi/sn'
+        expoURL = 'http://52.91.107.223:5000/exposure'
+        
         # Tests for argument parsing
         if debug > 1:
                 print(args.username)
@@ -75,6 +77,10 @@ def main(args):
         # Initialize camera object
         cameraObj = camera.setup()
 
+        #print(pi_serial)
+        pi_json = requests.get(snURL, json={'pi_sn': pi_serial}).json()
+        pi_id = pi_json['pi_id']
+        
         while True:
                 # Check for motion, will not continue until motion is detected
                 motion.motion_detected()
@@ -82,11 +88,16 @@ def main(args):
                 # Debugging print
                 if debug > 0:
                         print('Motion detected!')
+
+                expo_json = requests.post(expoURL, json={'pi_id': pi_id}).json()
+                expo_id = expo_json['exposures_id']
+
+                counter = 0
                 
                 while True:
-              	# Wait until correct time to take picture
-                        cur_time = dt.now() # Does this do anything?
-                        wait(args.delay_type, args.multiplier)
+              	        # Wait until correct time to take picture
+                        #cur_time = dt.now()
+                        #wait(args.delay_type, args.multiplier)
 
                         # Begin recording images
                         cur_time = dt.now()
@@ -100,11 +111,19 @@ def main(args):
                         filename = dir + '/image-' + cur_time.strftime('%H:%M:%S') + '.jpg'
                         print("" + filename)
                         camera.capture_picture(cameraObj, filename, cur_time)
+                        metadata = {
+                                'timestamp': cur_time.strftime('%H:%M:%S'),
+                                'filename': (cur_time.strftime('%H:%M:%S') + '.jpg'),
+                                'expo_id': expo_id,
+                                'pi_id': pi_id
+                                }
                         payload = {
                                 'photo': open(filename, 'rb')
               		}
-                        r = requests.post(imageURL, files=payload, timeout=5)
+                        r = requests.post(imageURL, files=payload, data=metadata)
 
+                        counter += 1
+                        
              		# Debugging prints
                         if debug > 0:
                                 print('Image file was sent to endpoint')
@@ -121,8 +140,10 @@ def main(args):
                         #break
 
               		# Remove when reset signal testing works
-                        if True:
+                        if counter == 5:
                                 break
+                if True:
+                        break
 
         # Release camera resources
         cameraObj.close()

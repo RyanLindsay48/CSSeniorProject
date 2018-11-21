@@ -6,7 +6,7 @@ from picamera import PiCamera
 # Setup camera with specified settings and initialize
 def setup():
         camera = PiCamera()
-        camera.resolution=(1280x720)
+        camera.resolution=('1280x720')
         camera.rotation=180
         camera.start_preview()
         return camera
