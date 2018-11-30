@@ -1,3 +1,4 @@
+
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
@@ -11,33 +12,40 @@ import 'MostRecentExposureScreen.dart';
 import 'package:http/http.dart' as http;
 import 'Pi.dart';
 import 'Globals.dart' as globals;
+import 'Photo.dart';
+import 'PictureList.dart';
+import 'Picture.dart';
+import 'PiList.dart';
 
 class HomeScreen extends StatelessWidget {
-    static List<String> photos = [];
-    static List<Pi> pis = [];
 
     Future<File> fetchPhotos(BuildContext context) async {
       print('hello');
-      //final response =await http.get('http://52.91.107.223:5000/user');
-
-      final response = await http.get(
-          'http://52.91.107.223:5000/exposure/pictures?pi_id=2&expo_id=28');
+      final response = await http.get('http://ec2-52-91-107-223.compute-1.amazonaws.com:5000/exposure/recent?id=0');
       print(response.statusCode);
       print('did I get this far');
       //print(response.bodyBytes.toString());
       if (response.statusCode == 200) {
-        final bytes = response.bodyBytes;
-        print(bytes);
-        Archive archive = ZipDecoder().decodeBytes(bytes);
-        print(archive);
-//        final Directory tempDirectory = await getTemporaryDirectory();
-//        print(tempDirectory.toString());
-//        tempDirectory.createSync(recursive: true);
-        for(ArchiveFile file in archive){
-          photos.add(file.toString());
-          print(file.toString());
+        print(response.body);
+        PictureList pics = new PictureList.fromJson(json.decode(response.body));
+        var size = pics.pictures.length;
+        List<Picture> photos = [];
+        for(int i = 0; i < size; i++){
+          print(pics.pictures[i].filepath);
+          List<String> garbage = pics.pictures[i].filepath.split('/');
+          print(garbage[6]);
+          Picture pic = new Picture();
+          pic.expo_id = garbage[4];
+          pic.pi_id = garbage[5];
+          pic.imageName = garbage[6];
+          print(pic.expo_id);
+          print(pic.pi_id);
+          print(pic.imageName);
+          print(pic);
+          print(photos);
+          photos.add(pic);
         }
-        Navigator.push(context,new MaterialPageRoute(builder: (context) => new MostRecentExposureScreen(photos)));
+        Navigator.push(context,new MaterialPageRoute(builder: (context) => new ShowExposureScreen(photos, 0)));
       }
       else {
         print('Cannot recieve photos');
@@ -46,36 +54,25 @@ class HomeScreen extends StatelessWidget {
       }
   }
 
-
     Future<Pi> fetchUserPis(BuildContext context) async {
       print('hello' + globals.userID.toString());
-      //final response =await http.get('http://52.91.107.223:5000/user');
-
       final response = await http.get(
           'http://52.91.107.223:5000/user/pis?id=0');
-//      final response = await http.get(
-//          'http://52.91.107.223:5000/user/pis?id=' + globals.userID.toString());
       print(response.statusCode);
       print('did I get this far');
       //print(response.bodyBytes.toString());
       if (response.statusCode == 200) {
         print(response.body);
-
         //Loop Through Json file and create pi object from each entry and add to pi list
         //IMMEDIATE TO DO LIST 11/30/2018
-        const jsonCodec = const JsonCodec();
-        Map piInfo = jsonCodec.decode(response.body);
-        Pi pi = new Pi.fromJson(json.decode(response.body));
-        var p = new Pi.fromJson(piInfo);
-        print('Location: ' + pi.location);
-        print('pi_id: ' + pi.pi_id.toString());
-        print('reset: ' + pi.reset.toString());
-        print('serial_number: ' + pi.serial_number);
-        print('user_id: ' + pi.user_id.toString());
-
-        pis.add(pi);
-
-
+        PiList userPis = new PiList.fromJson(json.decode(response.body));
+        var size = userPis.pis.length;
+        List<Pi> pis = [];
+        for(int i = 0; i<size; i++){
+          Pi pi = userPis.pis[i];
+          print(pi.location);
+          pis.add(pi);
+        }
         Navigator.push(context,new MaterialPageRoute(builder: (context) => new HouseHoldCamerasScreen(pis)));
       }
       else {
@@ -101,24 +98,11 @@ class HomeScreen extends StatelessWidget {
                   RaisedButton(
                     child: Text('Most recent Exposures'),
                     onPressed: ()=> fetchPhotos(context)
-//                        () {
-//                      Navigator.push(
-//                        context,
-//                        new MaterialPageRoute(builder: (context) => MostRecentExposureScreen()),
-//                      );
-//                    },
                   ),
 
                   RaisedButton(
                     child: Text('Cameras'),
                     onPressed: ()=> fetchUserPis(context)
-//                    {
-//                      Navigator.push(
-//                        context,
-//                        MaterialPageRoute(
-//                            builder: (context) => HouseHoldCamerasScreen()),
-//                      );
-//                    },
                   ),
 
 //                  RaisedButton(
