@@ -8,7 +8,8 @@ class Picture {
     this.expo_id,
     this.imageName,
   });
-
+  //Look into why dart made me create getters for this class when it its fine for others to not have getters
+  //Im very tired will look into later
   String getImageName() {
     return imageName;
   }
