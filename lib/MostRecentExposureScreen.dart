@@ -8,29 +8,44 @@ import 'HomeScreen.dart';
 import 'package:carousel_pro/carousel_pro.dart';
 import 'package:archive/archive.dart';
 import 'package:path_provider/path_provider.dart';
+import 'Picture.dart';
 
 class ShowExposureScreen extends StatelessWidget {
-  List<String> photos = [];
-  List<ArchiveFile> images = [];
-  List<File> files = [];
-  String testEndpointBeginning = 'http://52.91.107.223:5000/exposure/picture?image_name=';
-  String testEndpointEnd = '&pi_id=2&expo_id=28';
-  List<NetworkImage> myPhotos = [];
+  //List<String> photos = [];
+  List<Picture> photos =[];
+  int exposure_id;
+
+  //String testEndpointBeginning = 'http://52.91.107.223:5000/exposure/picture?image_name=';
+  //String testEndpointEnd = '&pi_id=2&expo_id=28';
+  //http://ec2-52-91-107-223.compute-1.amazonaws.com:5000/exposure/picture?pi_id=2&expo_id=28&image_name=image-162614.jpg
+  String endpointBegin = 'http://ec2-52-91-107-223.compute-1.amazonaws.com:5000/exposure/picture?expo_id=';
+  //String pi_id = '&pi_id='; //=2
+  String pi_id = '&pi_id=';//=28
+  String imageName = '&image_name=';
+
+
+  List<NetworkImage> myPhotos =[];
   //List<Image> myPhotos = [];
 
 
-  ShowExposureScreen(List<String> photos){
+  ShowExposureScreen(List<Picture> photos, int exposure_id){
     this.photos = photos;
+    this.exposure_id = exposure_id;
   }
 
 
   @override
   Widget build(BuildContext context) {
-    //fetchPhotos();
-    for(String str in photos){
-      str = testEndpointBeginning + str + testEndpointEnd;
+
+    for(Picture image in photos){
+      String str = endpointBegin + image.getPI() + pi_id + image.getExposure() + imageName + image.getImageName() ;
       myPhotos.add(new NetworkImage(str));
     }
+//    //fetchPhotos();
+//    for(String str in photos){
+//      str = testEndpointBeginning + str + testEndpointEnd;
+//      myPhotos.add(new NetworkImage(str));
+//    }
 
     return new MaterialApp(
       title: 'Most Recent Exposure Screen Screen',
@@ -53,13 +68,6 @@ class ShowExposureScreen extends StatelessWidget {
                   width: 300.0,
                   child: new Carousel(
                       images: myPhotos
-//                      [
-//                      new NetworkImage(photos[0]),
-//                      new NetworkImage(photos[1]),
-//                      new NetworkImage(photos[2]),
-//                      new NetworkImage(photos[3]),
-//                      new NetworkImage(photos[4])
-//                      ],
                   )
 
               ),
