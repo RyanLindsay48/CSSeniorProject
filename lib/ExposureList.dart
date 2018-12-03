@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'package:actualhousehawk/Exposure.dart';
+import 'Exposure.dart';
 
 import 'Photo.dart';
 class ExposureList {

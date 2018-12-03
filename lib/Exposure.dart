@@ -1,6 +1,3 @@
-library actualhousehawk.Exposure;
-
-
 class Exposure {
   final String end_time;
   final int exposures_id;

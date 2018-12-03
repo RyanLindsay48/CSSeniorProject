@@ -1,9 +1,7 @@
-
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:actualhousehawk/ExposureList.dart';
-import 'package:actualhousehawk/PiExposuresScreen.dart';
+import 'PiExposuresScreen.dart';
 import 'package:flutter/material.dart';
 import 'HomeScreen.dart';
 import 'main.dart';
@@ -11,6 +9,7 @@ import 'Pi.dart';
 import 'package:http/http.dart' as http;
 import 'ExposureList.dart';
 import 'Exposure.dart';
+import 'User.dart';
 
 
 class HouseHoldCamerasScreen extends StatelessWidget {
@@ -40,7 +39,7 @@ class HouseHoldCamerasScreen extends StatelessWidget {
         piExposures.add(expos.exposures[i]);
       }
       print(piExposures.length.toString());
-      Navigator.push(context,new MaterialPageRoute(builder: (context) => new PiExposuresScreen(piExposures, pi.location)));
+      Navigator.push(context,new MaterialPageRoute(builder: (context) => new PiExposuresScreen(piExposures, pi.location, pis)));
     }
     else {
       print('Cannot recieve photos');
@@ -79,8 +78,13 @@ class HouseHoldCamerasScreen extends StatelessWidget {
                         MaterialPageRoute(builder: (context) => HomeScreen()),
                       );
                     })),
-            body: new Column(
-              children: createButtons(pis.length, context)
-            )));
+            body: GridView.count(
+              crossAxisCount: 4,
+              children: createButtons(pis.length,context)
+            )
+//            new Column(
+//              children: createButtons(pis.length, context)
+//            )
+        ));
   }
 }

@@ -1,30 +1,28 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'ShowExposureScreen.dart';
 
-import 'package:actualhousehawk/ExposureList.dart';
-import 'package:actualhousehawk/Picture.dart';
-import 'package:actualhousehawk/PictureList.dart';
+import 'Picture.dart';
+import 'PictureList.dart';
 import 'package:flutter/material.dart';
-import 'HomeScreen.dart';
-import 'main.dart';
+
 import 'Pi.dart';
 import 'Exposure.dart';
 import 'package:http/http.dart' as http;
-import 'MostRecentExposureScreen.dart';
+
+import 'HouseHoldCamerasScreen.dart';
 
 class PiExposuresScreen extends StatelessWidget {
   List<Exposure> exposures = [];
   String piName;
+  List<Pi> pis = [];
 
-
-
-
-  PiExposuresScreen(List<Exposure> exposures, String piName){
+  PiExposuresScreen(List<Exposure> exposures, String piName, List<Pi> pis){
     this.exposures = exposures;
     this.piName = piName;
+    this.pis = pis;
   }
-
 
   createButtons(int size, BuildContext context){
     size = exposures.length;
@@ -66,7 +64,7 @@ class PiExposuresScreen extends StatelessWidget {
         print(photos);
         photos.add(pic);
       }
-      Navigator.push(context,new MaterialPageRoute(builder: (context) => new ShowExposureScreen(photos, exposure_id)));
+      Navigator.push(context,new MaterialPageRoute(builder: (context) => new ShowExposureScreen(photos,exposures, piName, pis)));
     }
     else {
       print('Cannot recieve photos');
@@ -88,12 +86,15 @@ class PiExposuresScreen extends StatelessWidget {
                     onPressed: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => HomeScreen()),
+                        MaterialPageRoute(builder: (context) => HouseHoldCamerasScreen(pis)),
                       );
                     })),
-            body: new Column(
-                children: createButtons(exposures.length, context)
+            body:  GridView.count(
+                    crossAxisCount: 4,
+                    children: createButtons(exposures.length,context)
+                )
+                //createButtons(exposures.length, context)
             )
-        ));
+        );
   }
 }
