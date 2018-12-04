@@ -35,19 +35,26 @@ def getSerial():
 def wait(delay_type, multiplier):
         # Determine delay time based on input
         now = dt.now()
-        delay_hr = timedelta(hours=multiplier)
-        delay_min = timedelta(minutes=multiplier)
-        delay_sec = timedelta(seconds=multiplier)
+        #delay_hr = timedelta(hours=multiplier)
+        #delay_min = timedelta(minutes=multiplier)
+        #delay_sec = timedelta(seconds=multiplier)
 
         # Determine delay time based on input
-        next_time = {
-                'hr': (now + delay_hr).replace(minute=0,second=0,microsecond=0),
-                'min': (now + delay_min).replace(second=0,microsecond=0),
-                'sec': (now + delay_sec).replace(microsecond=0)
-        }
+        #next_time = {
+        #        'hr': (now + delay_hr).replace(minute=0,second=0,microsecond=0),
+        #        'min': (now + delay_min).replace(second=0,microsecond=0),
+        #        'sec': (now + delay_sec).replace(microsecond=0)
+        #}
 
+        if delay_type == 'hr':
+                time_delay = dt.timedelta(hours = multiplier).total_seconds()
+        elif delay_type == 'min':
+                time_delay = dt.timedelta(minutes = multiplier).total_seconds()
+        elif delay_type == 'sec':
+                time_delay = dt.timedelta(seconds = multiplier).total_seconds()
+                
         # Delay the amount of time required
-        delay = (next_time.get(delay_type) - dt.now()).seconds
+        delay = time_delay - (now % time_delay)
         sleep(delay)
 
 
