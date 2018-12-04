@@ -15,8 +15,8 @@ import 'AddCamera.dart';
 class HomeScreen extends StatelessWidget {
     fetchPhotos(BuildContext context) async {
       print('hello');
-      print(globals.userID.toString());
-      final response = await http.get('http://ec2-52-91-107-223.compute-1.amazonaws.com:5000/exposure/recent?id=1'); //+globals.userID.toString());
+      print('DID GLOBALS TRANSFER OVER?!?!?!?!?!?' + globals.userID.toString());
+      final response = await http.get('http://ec2-52-91-107-223.compute-1.amazonaws.com:5000/exposure/recent?id=' + globals.userID.toString()); //+globals.userID.toString());
       print(response.statusCode);
       print('did I get this far');
       //print(response.bodyBytes.toString());
@@ -50,9 +50,10 @@ class HomeScreen extends StatelessWidget {
   }
 
     fetchUserPis(BuildContext context) async {
-      print('hello' + globals.userID.toString());
+
+      print('DID GLOBALS TRANSFER OVER?!?!?!?!?!?' + globals.userID.toString());
       final response = await http.get(
-          'http://52.91.107.223:5000/user/pis?id=1');// + globals.userID.toString());//+globals.userID.toString());
+          'http://52.91.107.223:5000/user/pis?id=' + globals.userID.toString());//+globals.userID.toString());
       print(response.statusCode);
       print('did I get this far');
       //print(response.bodyBytes.toString());
@@ -102,7 +103,13 @@ class HomeScreen extends StatelessWidget {
                   ),
                   RaisedButton(
                       child: Text('Add User Camera to System'),
-                      onPressed: ()=> AddCamera()
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => AddCamera()),
+                        );
+                      }
                   ),
                   RaisedButton(
                       child: Text('Sign Out'),

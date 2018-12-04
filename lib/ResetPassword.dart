@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'main.dart';
-void main() => runApp(new MyApp());
+//void main() => runApp(new MyApp());
 /*
   This file is is the home screen for the HouseHawk mobile application.
   It includes text fields for username and password.
@@ -19,7 +19,7 @@ class ResetPassword extends StatelessWidget {
         home: new Scaffold(
             appBar: new AppBar(
               title:new Text(
-                'Login Screen',
+                'Reset Password',
               ),
             ),
             body:new Container(
@@ -28,7 +28,7 @@ class ResetPassword extends StatelessWidget {
                     new Center(
                       child: new TextFormField(
                         decoration: new InputDecoration(
-                            labelText: 'username'
+                            labelText: 'email'
                         ),
                         keyboardType: TextInputType.text,
                       ),
@@ -46,26 +46,24 @@ class ResetPassword extends StatelessWidget {
                           labelText: 'confirm old password'
                       ),
                     ),
+                    new TextFormField(
+                      obscureText: true,
+                      decoration: new InputDecoration(
+                          labelText: 'new Password'
+                      ),
+                    ),
+                    new TextFormField(
+                      obscureText: true,
+                      decoration: new InputDecoration(
+                          labelText: 'confirm new password'
+                      ),
+                    ),
                     RaisedButton(child: Text('Reset Password'),
                         onPressed: () {
                           Navigator.push(
-                            context, new MaterialPageRoute(builder: (context) => new MyApp()),
+                            context, new MaterialPageRoute(builder: (context) => new LoginScreen()),
                           );
                         }),
-                    new InkWell(
-                        child:new Text("Dont have an account? Create one"),
-                        onTap: () {
-                          //Navigator.push(context, MaterialPageRoute(builder: (context) => new CreateAccountScreen()),
-                          //);
-                        }
-                    ),
-                    new InkWell(
-                        child:new Text("Forgot Password?"),
-                        onTap: () {
-                          //Navigator.push(context, MaterialPageRoute(builder: (context) => new ForgotPasswordScreen()),
-                          //);
-                        }
-                    ),
                   ],
                 )
             )

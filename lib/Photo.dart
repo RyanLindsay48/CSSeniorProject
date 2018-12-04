@@ -18,6 +18,3 @@ class Photo {
     );
   }
 }
-
-//I will also look into why I created a picture and a photo class
-//Again, I am very tired

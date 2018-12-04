@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
-import 'package:actualhousehawk/Globals.dart';
-
+import 'Picture.dart';
+import 'PictureList.dart';
 import 'CreateAccountScreen.dart';
 import 'HomeScreen.dart';
 import 'User.dart';
@@ -43,17 +43,58 @@ class LoginScreenState extends State<LoginScreen> {
         onSelectNotification: onSelectNotification);
   }
 
+  Future sleep10(){
+    return new Future.delayed(const Duration(seconds: 10));
+  }
   Future onSelectNotification(String payload) async {
-    if (payload != null) {
-      debugPrint('notification payload: ' + payload);
+    List<Picture> photos = [];
+    fetchPhotos(context,photos);
+    sleep10();
+    await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => MostRecentExposureScreen(photos)),
+    );
+  }
+
+  fetchPhotos(BuildContext context, List<Picture> photos) async {
+    print('hello');
+    print('DID GLOBALS TRANSFER OVER?!?!?!?!?!?' + globals.userID.toString());
+    final response = await http.get(
+        'http://ec2-52-91-107-223.compute-1.amazonaws.com:5000/exposure/recent?id=' +
+            globals.userID.toString()); //+globals.userID.toString());
+    print(response.statusCode);
+    print('did I get this far');
+    //print(response.bodyBytes.toString());
+    if (response.statusCode == 200) {
+      print(response.body);
+      PictureList pics = new PictureList.fromJson(json.decode(response.body));
+      var size = pics.pictures.length;
+      photos = new List<Picture>();
+      for (int i = 0; i < size; i++) {
+        print(pics.pictures[i].filepath);
+        List<String> garbage = pics.pictures[i].filepath.split('/');
+        print(garbage[6]);
+        Picture pic = new Picture();
+        pic.expo_id = garbage[4];
+        pic.pi_id = garbage[5];
+        pic.imageName = garbage[6];
+        print(pic.expo_id);
+        print(pic.pi_id);
+        print(pic.imageName);
+        print(pic);
+        print(photos);
+        photos.add(pic);
+      }
     }
-//    await Navigator.push(
-//      context,
-//      //MaterialPageRoute(builder: (context) => ShowExposureScreen()),
-//    );
+    else {
+      print('Cannot recieve photos');
+
+      throw Exception('Failed to load images');
+    }
   }
 
   Future showNotification() async {
+
     var androidPlatformChannelSpecifics = new AndroidNotificationDetails(
         'your channel id', 'your channel name', 'your channel description',
         importance: Importance.Max, priority: Priority.High);
@@ -172,6 +213,7 @@ class LoginScreenState extends State<LoginScreen> {
       print('updated global is: ' + globals.updated.toString());
       globals.updated = curUser.updated;
       if (globals.updated == 1) {
+        globals.updated = 0;
         await showNotification();
 //        Map<String, dynamic> jsonMap = {
 //          'user_id' : globals.userID.toString(),
@@ -179,6 +221,7 @@ class LoginScreenState extends State<LoginScreen> {
 //        };
         final response = await http.put(
             'http://52.91.107.223:5000/user/updated?user_id=' +globals.userID.toString()+ '&value=' + '0');
+
 
       }
     } else {

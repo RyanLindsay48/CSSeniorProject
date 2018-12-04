@@ -1,20 +1,30 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:async';
+import 'Globals.dart' as globals;
+import 'HomeScreen.dart';
 
 class AddCamera extends StatelessWidget {
-  String piSerialNumber;
-  String location;
+  static String piSerialNumber;
+  static String location;
   @override
   // ignore: unused_element
   Widget build(BuildContext context) {
     return new MaterialApp(
-      //title: 'Login page',
         home: new Scaffold(
             appBar: new AppBar(
               title: new Text(
                 'Add Camera',
               ),
+              leading: IconButton(
+                  icon: Icon(Icons.arrow_back),
+                  tooltip: 'Back to home screen',
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => HomeScreen()),
+                    );
+              })
             ),
             body: new Container(
                 child: new ListView(
@@ -52,9 +62,12 @@ class AddCamera extends StatelessWidget {
   }
 
   postData(BuildContext context) async {
-    final response = await http.put(
-        'http://52.91.107.223:5000/pi?user_id=42&location=' + location + '&serial_number=' + piSerialNumber);
+    print(globals.userID.toString());
+    final response = await http.post(
+        'http://52.91.107.223:5000/pi?user_id='+ globals.userID.toString() + '&location=' + location + '&serial_number=' + piSerialNumber);
     print(response.statusCode);
+    Navigator.push(context,new MaterialPageRoute(builder: (context) => new HomeScreen()));
+
 
   }
 }
