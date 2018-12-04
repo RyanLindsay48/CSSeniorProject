@@ -57,11 +57,13 @@ debug = 0  # debug flag. Different levels activate different print statements
 def main(args):
         # Gather user specific  information
         pi_serial = getSerial()
-        username = args.username
-        password = args.password
+        
+        #username = args.username
+        #password = args.password
+
         # Setup url to send information to
         imageURL = 'http://52.91.107.223:5000/exposure/picture'
-        resetURL = ''
+        resetURL = 'http://52.91.107.223:5000/pi/reset'
         snURL = 'http://52.91.107.223:5000/pi/sn'
         expoURL = 'http://52.91.107.223:5000/exposure'
         
@@ -94,10 +96,10 @@ def main(args):
 
                 counter = 0
                 
-                while True:
+                while counter < args.MAX_NUM:
               	        # Wait until correct time to take picture
                         #cur_time = dt.now()
-                        #wait(args.delay_type, args.multiplier)
+                        wait(args.delay_type, args.multiplier)
 
                         # Begin recording images
                         cur_time = dt.now()
@@ -108,12 +110,12 @@ def main(args):
                                os.makedirs(dir)
 
                         # Capture picture and send it to endpoint
-                        filename = dir + '/image-' + cur_time.strftime('%H:%M:%S') + '.jpg'
+                        filename = dir + '/image-' + cur_time.strftime('%H%M%S') + '.jpg'
                         print("" + filename)
                         camera.capture_picture(cameraObj, filename, cur_time)
                         metadata = {
-                                'timestamp': cur_time.strftime('%H:%M:%S'),
-                                'filename': (cur_time.strftime('%H:%M:%S') + '.jpg'),
+                                'timestamp': cur_time.strftime('%H%M%S'),
+                                'filename': ('image-' + cur_time.strftime('%H%M%S') + '.jpg'),
                                 'expo_id': expo_id,
                                 'pi_id': pi_id
                                 }
@@ -132,18 +134,13 @@ def main(args):
                         
                         
                         # Check for reset signal from the user
-              		#r = requests.get(resetURL, auth=(username, password))
-              		#signal_reset = r.json()['reset']
-              		#if signal_reset =  true
-              		# Reset signal back to default
-              		#requests.put(resetURL, auth=(username, password), false)
-                        #break
-
-              		# Remove when reset signal testing works
-                        if counter == 5:
+              		r = requests.get(resetURL, json={'pi_id' : pi_id})
+              		signal_reset = r.json()['reset']
+              		if signal_reset == 1: # Reset signal back to default
+              		        requests.put(resetURL, json={'value' : 0})
                                 break
-                if True:
-                        break
+
+                wait('sec', 10)
 
         # Release camera resources
         cameraObj.close()
@@ -158,9 +155,12 @@ if __name__=="__main__":
         parser.add_argument('-l', default='/Pictures/', type=str,
                             action='store', dest='location',
                             help='Location to save image files to on rpi')
-        parser.add_argument('-m', default=5, type=int,
+        parser.add_argument('-m', default=2, type=int,
                   	    action='store', dest='multiplier',
                   	    help='Time multiplier for delay')
+        parser.add_argument('-n', default=5, type=int,
+                            action='store', dest='MAX_NUM',
+                            help='Maximum number of pictures for one exposure')
         parser.add_argument('-p', default='password', type=str,
                             action='store', dest='password',
                             help='User specific password for user auth')
