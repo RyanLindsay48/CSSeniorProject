@@ -1,15 +1,18 @@
 import 'dart:async';
 import 'dart:convert';
-import 'Picture.dart';
-import 'PictureList.dart';
 import 'CreateAccountScreen.dart';
 import 'HomeScreen.dart';
 import 'User.dart';
 import 'MostRecentExposureScreen.dart';
 import 'Globals.dart' as globals;
+import 'Picture.dart';
+import 'PictureList.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+
+//This is where that app begins to run
+//void main() => runApp(HouseHawk());
 
 var flutterLocalNotificationsPlugin;
 
@@ -22,19 +25,32 @@ void main() async {
   );
 }
 
+/// endpoint
+/// users/updated
+
+/*
+  This class is is the login screen for the HouseHawk mobile application.
+  It includes text fields for username and password.
+  It includes a button to login to the home screen as well as links to create an
+  account or reset you password
+  ForgotPasswordScreen is also not created yet. (line 59)
+ */
+
 class LoginScreen extends StatefulWidget {
   @override
   LoginScreenState createState() => LoginScreenState();
 }
 
 class LoginScreenState extends State<LoginScreen> {
+  var curUser;
+
   @override
   initState() {
     super.initState();
     // initialise the plugin. app_icon needs to be a added as a drawable resource to the Android head project
     // If you have skipped STEP 3 then change app_icon to @mipmap/ic_launcher
     var initializationSettingsAndroid =
-    new AndroidInitializationSettings('@mipmap/ic_launcher');
+        new AndroidInitializationSettings('@mipmap/ic_launcher');
     var initializationSettingsIOS = new IOSInitializationSettings();
     var initializationSettings = new InitializationSettings(
         initializationSettingsAndroid, initializationSettingsIOS);
@@ -43,25 +59,30 @@ class LoginScreenState extends State<LoginScreen> {
         onSelectNotification: onSelectNotification);
   }
 
-  Future sleep10(){
-    return new Future.delayed(const Duration(seconds: 10));
-  }
   Future onSelectNotification(String payload) async {
-    List<Picture> photos = [];
-    fetchPhotos(context,photos);
-    sleep10();
-    await Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => MostRecentExposureScreen(photos)),
-    );
+    if (payload != null) {
+      debugPrint('notification payload: ' + payload);
+    }
+    await fetchPhotos(context);
   }
 
-  fetchPhotos(BuildContext context, List<Picture> photos) async {
+  Future showNotification() async {
+    var androidPlatformChannelSpecifics = new AndroidNotificationDetails(
+        'your channel id', 'your channel name', 'your channel description',
+        importance: Importance.Max, priority: Priority.High);
+    var iOSPlatformChannelSpecifics = new IOSNotificationDetails();
+    var platformChannelSpecifics = new NotificationDetails(
+        androidPlatformChannelSpecifics, iOSPlatformChannelSpecifics);
+    await flutterLocalNotificationsPlugin.show(0, 'You have a new exposure',
+        'Tap to view your most recent exposure ', platformChannelSpecifics,
+        payload: 'User ID is ' + globals.userID.toString());
+  }
+
+  fetchPhotos(BuildContext context) async {
     print('hello');
-    print('DID GLOBALS TRANSFER OVER?!?!?!?!?!?' + globals.userID.toString());
+    print(globals.userID.toString());
     final response = await http.get(
-        'http://ec2-52-91-107-223.compute-1.amazonaws.com:5000/exposure/recent?id=' +
-            globals.userID.toString()); //+globals.userID.toString());
+        'http://ec2-52-91-107-223.compute-1.amazonaws.com:5000/exposure/recent?id=1'); //+globals.userID.toString());
     print(response.statusCode);
     print('did I get this far');
     //print(response.bodyBytes.toString());
@@ -69,7 +90,7 @@ class LoginScreenState extends State<LoginScreen> {
       print(response.body);
       PictureList pics = new PictureList.fromJson(json.decode(response.body));
       var size = pics.pictures.length;
-      photos = new List<Picture>();
+      List<Picture> photos = [];
       for (int i = 0; i < size; i++) {
         print(pics.pictures[i].filepath);
         List<String> garbage = pics.pictures[i].filepath.split('/');
@@ -85,26 +106,13 @@ class LoginScreenState extends State<LoginScreen> {
         print(photos);
         photos.add(pic);
       }
-    }
-    else {
-      print('Cannot recieve photos');
-
-      throw Exception('Failed to load images');
+      Navigator.push(
+          context,
+          new MaterialPageRoute(
+              builder: (context) => new MostRecentExposureScreen(photos)));
     }
   }
 
-  Future showNotification() async {
-
-    var androidPlatformChannelSpecifics = new AndroidNotificationDetails(
-        'your channel id', 'your channel name', 'your channel description',
-        importance: Importance.Max, priority: Priority.High);
-    var iOSPlatformChannelSpecifics = new IOSNotificationDetails();
-    var platformChannelSpecifics = new NotificationDetails(
-        androidPlatformChannelSpecifics, iOSPlatformChannelSpecifics);
-    await flutterLocalNotificationsPlugin.show(0, 'You have a new exposure',
-        'Tap to view your most recent exposure ', platformChannelSpecifics,
-        payload: 'User ID is ' + globals.userID.toString());
-  }
   ////////////////////////////////////////////////////////
 
   // GLOBAL VARIABLES
@@ -132,7 +140,7 @@ class LoginScreenState extends State<LoginScreen> {
                       TextFormField(
                           autocorrect: false,
                           decoration:
-                          InputDecoration(labelText: 'Email Address'),
+                              InputDecoration(labelText: 'Email Address'),
                           validator: (text) => !text.contains('@')
                               ? 'Not a Valid Email address'
                               : null,
@@ -142,11 +150,11 @@ class LoginScreenState extends State<LoginScreen> {
                             email = text;
                           }),
                       TextFormField(
-                        //controller: pass,
+                          //controller: pass,
                           obscureText: true,
                           decoration: InputDecoration(labelText: 'Password'),
                           validator: (text) =>
-                          text.length < 4 ? 'Not a Valid Password' : null,
+                              text.length < 4 ? 'Not a Valid Password' : null,
                           //Entered password is assigned to global email variable
                           onSaved: (text) {
                             pass = text;
@@ -154,7 +162,6 @@ class LoginScreenState extends State<LoginScreen> {
                       RaisedButton(
                           child: Text('Login'),
                           onPressed: () async {
-                            //await showNotification();
                             onPressed();
                           }),
                       InkWell(
@@ -193,44 +200,6 @@ class LoginScreenState extends State<LoginScreen> {
     }
   }
 
-  Future fetchUserUpdated(http.Client client) async {
-    print('about to run http.get user/updated');
-    final response = await http.get(
-        'http://52.91.107.223:5000/user/updated?user_id=' +
-            globals.userID.toString());
-
-    print('status code ' + response.statusCode.toString());
-
-    if (response.statusCode == 200) {
-      // Connection Successful
-      print('Connection Successful');
-      print(response.body);
-
-      //  user object to hold all of the json data
-      var curUser = User.fromJson(json.decode(response.body));
-
-      // printing 'updated' global variable
-      print('updated global is: ' + globals.updated.toString());
-      globals.updated = curUser.updated;
-      if (globals.updated == 1) {
-        globals.updated = 0;
-        await showNotification();
-//        Map<String, dynamic> jsonMap = {
-//          'user_id' : globals.userID.toString(),
-//          'value' : '0'
-//        };
-        final response = await http.put(
-            'http://52.91.107.223:5000/user/updated?user_id=' +globals.userID.toString()+ '&value=' + '0');
-
-
-      }
-    } else {
-      // Unsuccessful connection
-      print('Didnt work, Unsuccessful connection');
-      throw Exception('Failed to load post');
-    }
-  }
-
   // Fetch a JSON document that contains a user object
   // from the REST API using the http.get method.
   Future<User> fetchUser(http.Client client) async {
@@ -243,7 +212,7 @@ class LoginScreenState extends State<LoginScreen> {
     //Call http get method to REST API endpoint
     print('about to run http.get');
     final response =
-    await http.get('http://52.91.107.223:5000/user/login?email=' + email);
+        await http.get('http://52.91.107.223:5000/user/login?email=' + email);
 
     print(response.statusCode);
     print('did I get this far');
@@ -254,20 +223,20 @@ class LoginScreenState extends State<LoginScreen> {
       print(response.body);
 
       //  user object to hold all of the json data
-      var curUser = User.fromJson(json.decode(response.body));
+      curUser = User.fromJson(json.decode(response.body));
 
-      if (curUser.email_address == email && curUser.password == pass) {
+      if (curUser.emailAddress == email && curUser.password == pass) {
         print('User successfully logged in');
 
         // setting global variables
         globals.isLoggedIn = true;
-        globals.fName = curUser.fname;
-        globals.lName = curUser.lname;
-        globals.emailAddress = curUser.email_address;
+        globals.fName = curUser.fName;
+        globals.lName = curUser.lName;
+        globals.emailAddress = curUser.emailAddress;
         globals.password = curUser.password;
         globals.updated = curUser.updated;
-        globals.userID = curUser.user_id;
-        email = curUser.email_address;
+        globals.userID = curUser.userId;
+        email = curUser.emailAddress;
         pass = curUser.password;
 
         // printing global variables
@@ -283,11 +252,15 @@ class LoginScreenState extends State<LoginScreen> {
         //ten second duration timer
         const tenSec = const Duration(seconds: 10);
 
-        //if userLoggedIn is true do this
-        if (globals.isLoggedIn) {
-          new Timer.periodic(
-              tenSec, (Timer t) => fetchUserUpdated(http.Client()));
+        void checkAndFetch() {
+          if (globals.isLoggedIn) {
+            fetchUserUpdated(http.Client());
+          }
         }
+
+        Timer.periodic(tenSec, (Timer t) => checkAndFetch());
+
+        Timer(tenSec, checkAndFetch);
 
         Navigator.push(
             context, MaterialPageRoute(builder: (context) => HomeScreen()));
@@ -296,6 +269,49 @@ class LoginScreenState extends State<LoginScreen> {
       }
 
       return curUser;
+    } else {
+      // Unsuccessful connection
+      print('Didnt work, Unsuccessful connection');
+      throw Exception('Failed to load post');
+    }
+  }
+
+  // Fetch the updated variable
+  Future fetchUserUpdated(http.Client client) async {
+    print('about to run http.get user/updated');
+    final response = await http.get(
+        'http://52.91.107.223:5000/user/updated?user_id=' +
+            globals.userID.toString());
+
+    print('status code ' + response.statusCode.toString());
+
+    if (response.statusCode == 200) {
+      // Connection Successful
+      print('Connection Successful');
+      print('response body is: ' + response.body);
+
+      // printing 'updated' global variable
+
+      curUser = User.fromJson(json.decode(response.body));
+      globals.updated = curUser.updated;
+
+      print('updated global is: ' + globals.updated.toString());
+      print("Cur user updated is: " + curUser.updated.toString());
+
+      if (globals.updated == 1) {
+        await showNotification();
+
+        // set gobal and curUser updated variables back to 0
+        globals.updated = 0;
+        curUser.updated = 0;
+
+        // Set updated variable in database back to 0
+        final response = await http.put(
+            'http://52.91.107.223:5000/user/updated?user_id=' +
+                globals.userID.toString() +
+                '&value=' +
+                '0');
+      }
     } else {
       // Unsuccessful connection
       print('Didnt work, Unsuccessful connection');
