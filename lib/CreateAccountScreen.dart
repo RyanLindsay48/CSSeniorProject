@@ -176,7 +176,7 @@ class CreateAccountScreenState extends State<CreateAccountScreen>{
     //final response =await http.get('http://52.91.107.223:5000/user');
 
     final response = await http.get(
-        'http://52.91.107.223:5000/users');
+        'endpoint/users');
     //print(response.statusCode);
     print('did I get this far');
     print(response.statusCode);
@@ -224,7 +224,7 @@ class CreateAccountScreenState extends State<CreateAccountScreen>{
     print('PASSWORD: ' + password);
     print('POSTING DATA');
     final response = await http.post(
-        'http://52.91.107.223:5000/user?email=' + email+'&password=' + password+'&fname=' +fname+'&lname=' + lname);
+        'endpoint/user?email=' + email+'&password=' + password+'&fname=' +fname+'&lname=' + lname);
 //    final response = await http.post(
 //        'http://52.91.107.223:5000/user?email=canhedoit@gmail.com&password=password+&fname=bob&lname=tha builder');
     print(response.statusCode);
@@ -236,7 +236,7 @@ class CreateAccountScreenState extends State<CreateAccountScreen>{
       print('DID THE POST WORK FOR HOUSE2?');
     } else {
       final response3 = await http.post(
-          'http://52.91.107.223:5000/household?user_id='+user_id+'&street_address='+
+          'endpoint/household?user_id='+user_id+'&street_address='+
               street_address+'&apartment_num=' + apartment_number+ '&city='+city+'&state='+state+'&zip_code='+zip_code);
       print(response3.statusCode);
       print('DID THE POST WORK FOR HOUSE3?');
