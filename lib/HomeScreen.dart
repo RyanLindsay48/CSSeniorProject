@@ -16,14 +16,9 @@ import 'AccountInfoScreen.dart';
 class HomeScreen extends StatelessWidget {
     var mostRecentPi = '';
     fetchPhotos(BuildContext context) async {
-      print('hello');
-      print('DID GLOBALS TRANSFER OVER?!?!?!?!?!?' + globals.userID.toString());
-      final response = await http.get('http://ec2-52-91-107-223.compute-1.amazonaws.com:5000/exposure/recent?id=' + globals.userID.toString()); //+globals.userID.toString());
-      print(response.statusCode);
-      print('did I get this far');
-      //print(response.bodyBytes.toString());
+      final response = await http.get('endpoint/exposure/recent?id=' + globals.userID.toString()); 
       if (response.statusCode == 200) {
-        print(response.body);
+        
         PictureList pics = new PictureList.fromJson(json.decode(response.body));
         var size = pics.pictures.length;
         List<Picture> photos = [];
@@ -56,13 +51,12 @@ class HomeScreen extends StatelessWidget {
 
       print('DID GLOBALS TRANSFER OVER?!?!?!?!?!?' + globals.userID.toString());
       final response = await http.get(
-          'http://52.91.107.223:5000/user/pis?id=' + globals.userID.toString());//+globals.userID.toString());
+          'endpoint/user/pis?id=' + globals.userID.toString());
       print(response.statusCode);
       print('did I get this far');
       //print(response.bodyBytes.toString());
       if (response.statusCode == 200) {
         print(response.body);
-        print('http://52.91.107.223:5000/user/pis?id=1');//+globals.userID.toString());
         PiList userPis = new PiList.fromJson(json.decode(response.body));
         var size = userPis.pis.length;
         List<Pi> pis = [];
