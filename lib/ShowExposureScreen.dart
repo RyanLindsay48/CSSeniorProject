@@ -17,6 +17,8 @@ class ShowExposureScreen extends StatelessWidget {
   String piName;
   List<Pi> pis;
 
+  List<String> pics = [];
+
   ShowExposureScreen(List<Picture> photos,List<Exposure> exposures, String piName, List<Pi> pis){
     this.photos = photos;
     this.exposures = exposures;
@@ -24,11 +26,21 @@ class ShowExposureScreen extends StatelessWidget {
     this.pis = pis;
   }
 
+  buildCells(int length) {
+    List<Container> cells = new List<Container>.generate(length,(int index) {
+      return new Container(
+        child: new Image.network(pics[index]),
+      );
+    });
+    return cells;
+  }
+
   @override
   Widget build(BuildContext context) {
     for(Picture image in photos){
-      String str = endpointBegin + image.getPI() + pi_id + image.getExposure() + imageName + image.getImageName();
+      String str = endpointBegin + image.getExposure() + pi_id + image.getPI() + imageName + image.getImageName();
       myPhotos.add(new NetworkImage(str));
+      pics.add(str);
     }
     return new MaterialApp(
         title: 'Image captures screen',
@@ -44,20 +56,14 @@ class ShowExposureScreen extends StatelessWidget {
                         MaterialPageRoute(builder: (context) => PiExposuresScreen(exposures, piName, pis)),
                       );
             })),
-            body: Center(
-              child: new Container(
-                child: new SizedBox(
-                    height: 300.0,
-                    width: 300.0,
-                    child: new Carousel(
-                        images: myPhotos
-                    )
-                ),
-              ),
-            )
+            body:  GridView.count(
+                      crossAxisSpacing: 5.0,
+                      padding: const EdgeInsets.all(5.0),
+                      crossAxisCount: 2,
+                      children: buildCells(myPhotos.length),
+            ),
         )
       );
-
   }
 }
 

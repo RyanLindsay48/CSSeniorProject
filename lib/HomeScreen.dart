@@ -11,8 +11,10 @@ import 'Picture.dart';
 import 'PiList.dart';
 import 'main.dart';
 import 'AddCamera.dart';
+import 'AccountInfoScreen.dart';
 
 class HomeScreen extends StatelessWidget {
+    var mostRecentPi = '';
     fetchPhotos(BuildContext context) async {
       print('hello');
       print('DID GLOBALS TRANSFER OVER?!?!?!?!?!?' + globals.userID.toString());
@@ -30,8 +32,9 @@ class HomeScreen extends StatelessWidget {
           List<String> garbage = pics.pictures[i].filepath.split('/');
           print(garbage[6]);
           Picture pic = new Picture();
-          pic.expo_id = garbage[4];
-          pic.pi_id = garbage[5];
+          pic.pi_id = garbage[4];
+          mostRecentPi = pic.pi_id;
+          pic.expo_id = garbage[5];
           pic.imageName = garbage[6];
           print(pic.expo_id);
           print(pic.pi_id);
@@ -40,7 +43,7 @@ class HomeScreen extends StatelessWidget {
           print(photos);
           photos.add(pic);
         }
-        Navigator.push(context,new MaterialPageRoute(builder: (context) => new MostRecentExposureScreen(photos)));
+        Navigator.push(context,new MaterialPageRoute(builder: (context) => new MostRecentExposureScreen(photos, mostRecentPi)));
       }
       else {
         print('Cannot recieve photos');
@@ -60,8 +63,6 @@ class HomeScreen extends StatelessWidget {
       if (response.statusCode == 200) {
         print(response.body);
         print('http://52.91.107.223:5000/user/pis?id=1');//+globals.userID.toString());
-        //Loop Through Json file and create pi object from each entry and add to pi list
-        //IMMEDIATE TO DO LIST 11/30/2018
         PiList userPis = new PiList.fromJson(json.decode(response.body));
         var size = userPis.pis.length;
         List<Pi> pis = [];
@@ -82,27 +83,25 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return new MaterialApp(
-      title: 'Home Screen',
-      home: new Scaffold(
-          appBar: new AppBar(
-            title: new Text('Welcome to House Hawk'),
-          ),
-          body: new Container(
-              child: new ListView(
-                children: <Widget>[
-                  new Center(),
-                  //Page navigation does not currently work
+      home: Scaffold(
+          appBar: AppBar(title: Text('Login Screen')),
+          body: Padding(
+              padding: EdgeInsets.all(10.0),
+            child: new ListView(
+               children: <Widget>[
                   RaisedButton(
+                    padding: EdgeInsets.only(left:10.0,right:10.0),
                     child: Text('Most recent Exposures'),
                     onPressed: ()=> fetchPhotos(context)
                   ),
-
                   RaisedButton(
+                    //padding: const EdgeInsets.only(left:10.0,right:10.0,top:5.0,bottom:5.0),
                     child: Text('Cameras'),
                     onPressed: ()=> fetchUserPis(context)
                   ),
                   RaisedButton(
-                      child: Text('Add User Camera to System'),
+                      //padding: const EdgeInsets.only(left:10.0,right:10.0,top:5.0,bottom:5.0),
+                      child: Text('Add Camera to You System'),
                       onPressed: () {
                         Navigator.push(
                           context,
@@ -112,8 +111,27 @@ class HomeScreen extends StatelessWidget {
                       }
                   ),
                   RaisedButton(
-                      child: Text('Sign Out'),
+                      //padding: const EdgeInsets.only(left:10.0,right:10.0,top:5.0,bottom:5.0),
+                      child: new Text('View My Account Info'),
                       onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => AccountInfoScreen()),
+                        );
+                      }),
+                  RaisedButton(
+                      //padding: const EdgeInsets.only(left:10.0,right:10.0,top:5.0,bottom:5.0),
+                      child: new Text('Sign out'),
+                      textColor: Colors.redAccent,
+                      onPressed: () {
+                        globals.emailAddress = '';
+                        globals.fName = '';
+                        globals.lName = '';
+                        globals.password = '';
+                        globals.userID = 0;
+                        globals.updated = 0;
+                        globals.isLoggedIn = false;
                         Navigator.push(
                           context,
                           MaterialPageRoute(
@@ -122,15 +140,7 @@ class HomeScreen extends StatelessWidget {
                       }
                   ),
 
-//                  RaisedButton(
-//                      child: new Text('View My Account Info'),
-//                      onPressed: () {
-//                        Navigator.push(
-//                          context,
-//                          MaterialPageRoute(
-//                              builder: (context) => AccountInfoScreen()),
-//                        );
-//                      }),
+
                 ],
               ))),
     );

@@ -1,5 +1,8 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
+import 'HouseHold.dart';
+
 import 'CreateAccountScreen.dart';
 import 'HomeScreen.dart';
 import 'User.dart';
@@ -43,6 +46,7 @@ class LoginScreen extends StatefulWidget {
 
 class LoginScreenState extends State<LoginScreen> {
   var curUser;
+  String mostRecentPi = '';
 
   @override
   initState() {
@@ -50,7 +54,7 @@ class LoginScreenState extends State<LoginScreen> {
     // initialise the plugin. app_icon needs to be a added as a drawable resource to the Android head project
     // If you have skipped STEP 3 then change app_icon to @mipmap/ic_launcher
     var initializationSettingsAndroid =
-        new AndroidInitializationSettings('@mipmap/ic_launcher');
+    new AndroidInitializationSettings('@mipmap/ic_launcher');
     var initializationSettingsIOS = new IOSInitializationSettings();
     var initializationSettings = new InitializationSettings(
         initializationSettingsAndroid, initializationSettingsIOS);
@@ -64,6 +68,7 @@ class LoginScreenState extends State<LoginScreen> {
       debugPrint('notification payload: ' + payload);
     }
     await fetchPhotos(context);
+
   }
 
   Future showNotification() async {
@@ -82,7 +87,7 @@ class LoginScreenState extends State<LoginScreen> {
     print('hello');
     print(globals.userID.toString());
     final response = await http.get(
-        'http://ec2-52-91-107-223.compute-1.amazonaws.com:5000/exposure/recent?id=1'); //+globals.userID.toString());
+        'http://ec2-52-91-107-223.compute-1.amazonaws.com:5000/exposure/recent?id='+globals.userID.toString());
     print(response.statusCode);
     print('did I get this far');
     //print(response.bodyBytes.toString());
@@ -96,8 +101,9 @@ class LoginScreenState extends State<LoginScreen> {
         List<String> garbage = pics.pictures[i].filepath.split('/');
         print(garbage[6]);
         Picture pic = new Picture();
-        pic.expo_id = garbage[4];
-        pic.pi_id = garbage[5];
+        pic.pi_id = garbage[4];
+        mostRecentPi = pic.pi_id;
+        pic.expo_id = garbage[5];
         pic.imageName = garbage[6];
         print(pic.expo_id);
         print(pic.pi_id);
@@ -109,7 +115,7 @@ class LoginScreenState extends State<LoginScreen> {
       Navigator.push(
           context,
           new MaterialPageRoute(
-              builder: (context) => new MostRecentExposureScreen(photos)));
+              builder: (context) => new MostRecentExposureScreen(photos, mostRecentPi)));
     }
   }
 
@@ -140,7 +146,7 @@ class LoginScreenState extends State<LoginScreen> {
                       TextFormField(
                           autocorrect: false,
                           decoration:
-                              InputDecoration(labelText: 'Email Address'),
+                          InputDecoration(labelText: 'Email Address'),
                           validator: (text) => !text.contains('@')
                               ? 'Not a Valid Email address'
                               : null,
@@ -150,17 +156,19 @@ class LoginScreenState extends State<LoginScreen> {
                             email = text;
                           }),
                       TextFormField(
-                          //controller: pass,
+                        //controller: pass,
                           obscureText: true,
                           decoration: InputDecoration(labelText: 'Password'),
                           validator: (text) =>
-                              text.length < 4 ? 'Not a Valid Password' : null,
+                          text.length < 4 ? 'Not a Valid Password' : null,
                           //Entered password is assigned to global email variable
                           onSaved: (text) {
                             pass = text;
                           }),
                       RaisedButton(
                           child: Text('Login'),
+                          color: Colors.green,
+                          textColor: Colors.white,
                           onPressed: () async {
                             onPressed();
                           }),
@@ -173,15 +181,6 @@ class LoginScreenState extends State<LoginScreen> {
                                   builder: (context) => CreateAccountScreen()),
                             );
                           }),
-                      InkWell(
-                          child: Text("Continue with out loggoing in"),
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => HomeScreen()),
-                            );
-                          })
                     ])))));
   }
 
@@ -212,7 +211,7 @@ class LoginScreenState extends State<LoginScreen> {
     //Call http get method to REST API endpoint
     print('about to run http.get');
     final response =
-        await http.get('http://52.91.107.223:5000/user/login?email=' + email);
+    await http.get('http://52.91.107.223:5000/user/login?email=' + email);
 
     print(response.statusCode);
     print('did I get this far');
@@ -225,19 +224,38 @@ class LoginScreenState extends State<LoginScreen> {
       //  user object to hold all of the json data
       curUser = User.fromJson(json.decode(response.body));
 
-      if (curUser.emailAddress == email && curUser.password == pass) {
+      if (curUser.email_address == email && curUser.password == pass) {
         print('User successfully logged in');
 
         // setting global variables
         globals.isLoggedIn = true;
-        globals.fName = curUser.fName;
-        globals.lName = curUser.lName;
-        globals.emailAddress = curUser.emailAddress;
+        globals.fName = curUser.fname;
+        globals.lName = curUser.lname;
+        globals.emailAddress = curUser.email_address;
         globals.password = curUser.password;
         globals.updated = curUser.updated;
-        globals.userID = curUser.userId;
-        email = curUser.emailAddress;
+        globals.userID = curUser.user_id;
+        email = curUser.email_address;
         pass = curUser.password;
+
+        final response = await http.get('http://ec2-52-91-107-223.compute-1.amazonaws.com:5000/user/household?user_id=' + globals.userID.toString()); //+globals.userID.toString());
+        print(response.statusCode);
+        print('did I get this far');
+        //print(response.bodyBytes.toString());
+        if (response.statusCode == 200) {
+          print(response.body);
+          HouseHold house = new HouseHold.fromJson(json.decode(response.body));
+          globals.household_id = house.household_id;
+          globals.street_address = house.street_address;
+          globals.apartment_num = house.apartment_num;
+          globals.state = house.state;
+          globals.city = house.city;
+          globals.zip_code = house.zip_code;
+        }
+        else {
+          throw Exception('Failed to get household info');
+        }
+
 
         // printing global variables
         print('Printing all globals');
@@ -246,6 +264,12 @@ class LoginScreenState extends State<LoginScreen> {
         print('email: ' + globals.emailAddress);
         print('pass: ' + globals.password);
         print('userID: ' + globals.userID.toString());
+        print('Printing all globals for household info');
+        print('household_id: ' + globals.household_id.toString());
+        print('street_adress: ' + globals.street_address);
+        print('city: ' + globals.city);
+        print('state: ' + globals.state);
+        print('zip_code: ' + globals.zip_code);
 
         flutterLocalNotificationsPlugin = new FlutterLocalNotificationsPlugin();
 
@@ -276,6 +300,7 @@ class LoginScreenState extends State<LoginScreen> {
     }
   }
 
+
   // Fetch the updated variable
   Future fetchUserUpdated(http.Client client) async {
     print('about to run http.get user/updated');
@@ -299,6 +324,7 @@ class LoginScreenState extends State<LoginScreen> {
       print("Cur user updated is: " + curUser.updated.toString());
 
       if (globals.updated == 1) {
+        sleep(const Duration(seconds: 5));
         await showNotification();
 
         // set gobal and curUser updated variables back to 0

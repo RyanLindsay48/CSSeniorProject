@@ -18,7 +18,6 @@ class AddCamera extends StatelessWidget {
               ),
               leading: IconButton(
                   icon: Icon(Icons.arrow_back),
-                  tooltip: 'Back to home screen',
                   onPressed: () {
                     Navigator.push(
                       context,
@@ -26,7 +25,8 @@ class AddCamera extends StatelessWidget {
                     );
               })
             ),
-            body: new Container(
+            body: Padding(
+                padding: EdgeInsets.all(10.0),
                 child: new ListView(
                   children: <Widget>[
                     new Center(
@@ -51,7 +51,7 @@ class AddCamera extends StatelessWidget {
                           location = text;
                         }
                     ),
-                    RaisedButton(child: Text('Create Account'),
+                    RaisedButton(child: Text('Add Camera'),
                       onPressed: () => postData(context),
                     ),
                   ],

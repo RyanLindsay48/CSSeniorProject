@@ -15,9 +15,6 @@ import 'User.dart';
 class HouseHoldCamerasScreen extends StatelessWidget {
   List<Pi> pis = [];
 
-
-
-
   HouseHoldCamerasScreen(List<Pi> pis){
     this.pis = pis;
   }
@@ -65,7 +62,6 @@ class HouseHoldCamerasScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return new MaterialApp(
-        title: 'Household Cameras',
         home: new Scaffold(
             appBar: new AppBar(
                 title: new Text('House Hold Cameras'),
@@ -78,13 +74,11 @@ class HouseHoldCamerasScreen extends StatelessWidget {
                         MaterialPageRoute(builder: (context) => HomeScreen()),
                       );
                     })),
-            body: GridView.count(
-              crossAxisCount: 4,
-              children: createButtons(pis.length,context)
-            )
-//            new Column(
-//              children: createButtons(pis.length, context)
-//            )
-        ));
+                    body: Padding(
+                       padding: EdgeInsets.all(10.0),
+                          child: ListView(
+                            children: createButtons(pis.length,context)
+                          )
+        )));
   }
 }

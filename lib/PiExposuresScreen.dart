@@ -12,6 +12,7 @@ import 'Exposure.dart';
 import 'package:http/http.dart' as http;
 
 import 'HouseHoldCamerasScreen.dart';
+import 'TimeStampFormatter.dart';
 
 class PiExposuresScreen extends StatelessWidget {
   List<Exposure> exposures = [];
@@ -31,9 +32,16 @@ class PiExposuresScreen extends StatelessWidget {
     for(int i = 0; i < size; i++){
       var triggerTime = exposures[i].start_time;
       print(triggerTime);
-      buttons.add(RaisedButton(child: Text(triggerTime),
+      String date = triggerTime.substring(0,10);
+      String time = triggerTime.substring(11,triggerTime.length);
+      buttons.add(RaisedButton(child: Text(TimeStampFormatter.getFormattedDate(date) +
+               ' at: ' + TimeStampFormatter.getFormattedTime(time)),
         onPressed: ()=> fetchPhotos(context, exposures[i].exposures_id),
       ));
+
+//      buttons.add(RaisedButton(child: Text(date),
+//        onPressed: ()=> fetchPhotos(context, exposures[i].exposures_id),
+//      ));
     }
     return buttons;
   }
@@ -54,8 +62,8 @@ class PiExposuresScreen extends StatelessWidget {
         List<String> garbage = pics.pictures[i].filepath.split('/');
         print(garbage[6]);
         Picture pic = new Picture();
-        pic.expo_id = garbage[4];
-        pic.pi_id = garbage[5];
+        pic.pi_id = garbage[4];
+        pic.expo_id = garbage[5];
         pic.imageName = garbage[6];
         print(pic.expo_id);
         print(pic.pi_id);
@@ -76,7 +84,6 @@ class PiExposuresScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return new MaterialApp(
-        title: piName + 'Exposures',
         home: new Scaffold(
             appBar: new AppBar(
                 title: new Text(piName +' Camera'),
@@ -89,12 +96,13 @@ class PiExposuresScreen extends StatelessWidget {
                         MaterialPageRoute(builder: (context) => HouseHoldCamerasScreen(pis)),
                       );
                     })),
-            body:  GridView.count(
-                    crossAxisCount: 4,
+            body:  Padding(
+              padding: EdgeInsets.all(10.0),
+                child: ListView(
                     children: createButtons(exposures.length,context)
                 )
                 //createButtons(exposures.length, context)
             )
-        );
+        ));
   }
 }

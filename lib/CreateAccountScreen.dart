@@ -7,7 +7,14 @@ import 'main.dart';
 import 'user.dart';
 import 'UserList.dart';
 
-class CreateAccountScreen extends StatelessWidget {
+
+class CreateAccountScreen extends StatefulWidget {
+  @override
+  CreateAccountScreenState createState() => CreateAccountScreenState();
+}
+
+class CreateAccountScreenState extends State<CreateAccountScreen>{
+
   // This widget is the root of your application.
   static String fname = '';
   static String lname = '';
@@ -20,6 +27,14 @@ class CreateAccountScreen extends StatelessWidget {
   static String zip_code = '';
   static String user_id = '';
   static bool isValid = false;
+  final formKey = GlobalKey<FormState>();
+
+  @override
+  initState(){
+    super.initState();
+  }
+
+
 
       @override
     // ignore: unused_element
@@ -31,154 +46,129 @@ class CreateAccountScreen extends StatelessWidget {
                 title: new Text(
                   'Create Account',
                 ),
+                  leading: IconButton(
+                      icon: Icon(Icons.arrow_back),
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => LoginScreen()),
+                        );
+                      })
               ),
-              body: new Container(
-                  child: new ListView(
-                    children: <Widget>[
-                      new Center(
-                        child: new TextField(
-                            decoration: new InputDecoration(
-                                labelText: 'firstname'
+
+              body: new Padding(
+                padding: EdgeInsets.all(10.0),
+                  child: Form(
+                    key: formKey,
+                    child: ListView(children: <Widget>[
+                            TextFormField(
+                              decoration: new InputDecoration(
+                                  labelText: 'firstname'
+                              ),
+                              validator: (text)=> text ==''
+                                  ? 'FirstName is Required!'
+                                  : fname = text,
                             ),
-                            keyboardType: TextInputType.text,
-                            onChanged: (text) {
-                              print('User FirstName is:  $text');
-                              fname = text;
-                              print('FIRSTNAME IS: ' + fname);
-                            }
-                        ),
-                      ),
-                      new TextField(
-                          decoration: new InputDecoration(
-                              labelText: 'lastname'
-                          ),
-                          keyboardType: TextInputType.text,
-                          onChanged: (text) {
-                            print('User LastName is:  $text');
-                            lname = text;
-                            print('LASTNAME IS: ' + lname);
-                          }
-                      ),
-                      new TextField(
-
-                          decoration: new InputDecoration(
+                            TextFormField(
+                              decoration: new InputDecoration(
+                                  labelText: 'lastname'
+                              ),
+                              validator: (text)=> text ==''
+                                  ? 'Last Name is Required!'
+                                  : lname = text,
+                            ),
+                            TextFormField(
+                              decoration: new InputDecoration(
                               labelText: 'email address'
-                          ),
-                          keyboardType: TextInputType.text,
-                          onChanged: (text) {
-                            print('User Email Address is:  $text');
-                            email = text;
-                            print('EMAIL IS: ' + email);
-
-                          }
-                      ),
-                      new TextField(
-                          obscureText: true,
-                          decoration: new InputDecoration(
-                              labelText: 'Desired Password'
-                          ),
-                          //keyboardType: TextInputType.text,
-                          onChanged: (text) {
-                            print('Desired Password is:  $text');
-                            password = text;
-                            print('PASSWORD IS: ' + password);
-                          }
-                      ),
-                      new TextField(
-                          obscureText: true,
-                          decoration: new InputDecoration(
-                              labelText: 'Confrim Desired Password'
-                          ),
-                          //keyboardType: TextInputType.text,
-                          onChanged: (text) {
-                            print('Confirm Desired Password is:  $text');
-                            if (password != text) {
-                              print('passwords do not match');
-                            }
-                          }
-                      ),
-                      new TextField(
-
-                          decoration: new InputDecoration(
+                            ),
+                            validator: (text)=> text ==''
+                                ? 'Invalid Email address!'
+                                : email = text,
+                            ),
+                            TextFormField(
+                              obscureText: true,
+                              decoration: new InputDecoration(
+                                labelText: 'Desired Password'
+                            ),
+                            validator: (text)=> text ==''
+                                ? 'Password is Required!'
+                                : password = text,
+                            ),
+                            TextFormField(
+                              obscureText: true,
+                              decoration: new InputDecoration(
+                                labelText: 'Confrim Desired Password'
+                              ),
+                              validator: (text)=> text == password
+                                ? 'Passwords do not match!'
+                                : password = text,
+                              ),
+                            TextFormField(
+                              decoration: new InputDecoration(
                               labelText: 'Street Address'
-                          ),
-                          keyboardType: TextInputType.text,
-                          onChanged: (text) {
-                            print('User Street Address is:  $text');
-                            street_address = text;
-                            print('STREET ADDRESS IS: ' + street_address);
-
-                          }
-                      ),
-                      new TextField(
-
-                          decoration: new InputDecoration(
-                              labelText: 'Apartment Number'
-                          ),
-                          keyboardType: TextInputType.text,
-                          onChanged: (text) {
-                            print('User apartmentNumber is:  $text');
-                            apartment_number = text;
-                            print('APARTMENT NUMBER IS: ' + apartment_number);
-
-                          }
-                      ),
-                      new TextField(
-
-                          decoration: new InputDecoration(
+                              ),
+                              keyboardType: TextInputType.text,
+                              validator: (text)=> text ==''
+                                  ? 'Street Address is Required!'
+                                  : street_address = text,
+                            ),
+                            TextFormField(
+                              decoration: new InputDecoration(
+                              labelText: 'Apt. No'
+                              ),
+                              keyboardType: TextInputType.text,
+                              validator: (text){
+                                apartment_number = text;
+                              }
+                            ),
+                            TextFormField(
+                              decoration: new InputDecoration(
                               labelText: 'City'
-                          ),
-                          keyboardType: TextInputType.text,
-                          onChanged: (text) {
-                            print('User City is:  $text');
-                            city = text;
-                            print('City IS: ' + city);
-
-                          }
-                      ),
-                      new TextField(
-
-                          decoration: new InputDecoration(
-                              labelText: 'State'
-                          ),
-                          keyboardType: TextInputType.text,
-                          onChanged: (text) {
-                            print('User State is:  $text');
-                            state = text;
-                            print('STATE IS: ' + state);
-
-                          }
-                      ),
-                      new TextField(
-
-                          decoration: new InputDecoration(
+                              ),
+                              keyboardType: TextInputType.text,
+                              validator: (text)=> text ==''
+                                  ? 'City is Required!'
+                                  : city = text,
+                            ),
+                            TextFormField(
+                                decoration: new InputDecoration(
+                                labelText: 'State'
+                                ),
+                                validator: (text)=> text ==''
+                                  ? 'State is Required!'
+                                  : state = text,
+                            ),
+                            TextFormField(
+                              decoration: new InputDecoration(
                               labelText: 'Zip Code'
-                          ),
-                          keyboardType: TextInputType.text,
-                          onChanged: (text) {
-                            print('User Zip Code is:  $text');
-                            zip_code = text;
-                            print('ZIP IS: ' + zip_code);
-
-                          }
-                      ),
-                      RaisedButton(child: Text('Create Account'),
-                        onPressed: () => fetchData(context),
-                      ),
-                      new InkWell(
-                          child: new Text("Actually have an Account? Sign in"),
-                          onTap: () {
-                            Navigator.push(context, MaterialPageRoute(
-                                builder: (context) => new LoginScreen()),
-                            );
-                          }
-                      ),
-                    ],
+                              ),
+                              validator: (text)=> text ==''
+                                ? 'Zip Code is Required!'
+                                : zip_code = text,
+                            ),
+                            RaisedButton(child: Text('Create Account'),
+                              onPressed: () => onPressed(context),
+                            ),
+                    ]),
                   )
               )
           )
       );
     }
+  void onPressed(BuildContext context) {
+    //Grab all of the form state and save it
+    var form = formKey.currentState;
+
+    // run all of the validator functions and check if we are getting null like we want or our error
+    // if error then it will return false if null the return back true
+    if (form.validate()) {
+      // goes through all onSaved functions and saves
+      form.save();
+
+      // After text fields are saved make http request
+      fetchData(context);
+    }
+  }
 
   Future<User> fetchData(BuildContext context) async {
 
@@ -253,7 +243,7 @@ class CreateAccountScreen extends StatelessWidget {
     }
     Navigator.push(context,new MaterialPageRoute(builder: (context) => new LoginScreen()));
   }
-  }
+}
 
 
 
