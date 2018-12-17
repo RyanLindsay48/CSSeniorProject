@@ -64,7 +64,7 @@ class AddCamera extends StatelessWidget {
   postData(BuildContext context) async {
     print(globals.userID.toString());
     final response = await http.post(
-        'http://52.91.107.223:5000/pi?user_id='+ globals.userID.toString() + '&location=' + location + '&serial_number=' + piSerialNumber);
+        'api'+ globals.userID.toString() + '&location=' + location + '&serial_number=' + piSerialNumber);
     print(response.statusCode);
     Navigator.push(context,new MaterialPageRoute(builder: (context) => new HomeScreen()));
 
