@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'User.dart';
 class UserList {
   final List<User> users;

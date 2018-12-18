@@ -1,12 +1,6 @@
 import 'package:flutter/material.dart';
 import 'HomeScreen.dart';
-import 'main.dart';
-import 'ResetPassword.dart';
 import 'Globals.dart' as globals;
-import 'HouseHold.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
-
 
 class AccountInfoScreen extends StatelessWidget {
 
@@ -43,14 +37,7 @@ class AccountInfoScreen extends StatelessWidget {
       }),
       ListTile(title: Text("Last Name: " + globals.lName), onTap: () {}),
       ListTile(title: Text("Email Address: " + globals.emailAddress), onTap: () {}),
-      ListTile(
-          title: Text("Password: " + globals.password),
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => ResetPassword()),
-            );
-          }),
+      ListTile(title: Text("Password: " + globals.password)),
       ListTile(title: Text("Street Address: " + globals.street_address)),
       ListTile(title: Text("Apartment #: " + globals.apartment_num)),
       ListTile(title: Text("State: " + globals.state)),

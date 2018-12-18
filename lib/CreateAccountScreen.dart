@@ -7,7 +7,11 @@ import 'main.dart';
 import 'user.dart';
 import 'UserList.dart';
 
-
+/**
+ * The functionality of these classes is to allow a user to create a HomeHawk account.
+ * Users are prompted to enter in their information and then if the information is valid it gets
+ * sent back to the server.
+ */
 class CreateAccountScreen extends StatefulWidget {
   @override
   CreateAccountScreenState createState() => CreateAccountScreenState();
@@ -15,7 +19,6 @@ class CreateAccountScreen extends StatefulWidget {
 
 class CreateAccountScreenState extends State<CreateAccountScreen>{
 
-  // This widget is the root of your application.
   static String fname = '';
   static String lname = '';
   static String email = '';
@@ -34,11 +37,8 @@ class CreateAccountScreenState extends State<CreateAccountScreen>{
     super.initState();
   }
 
-
-
-      @override
-    // ignore: unused_element
-    Widget build(BuildContext context) {
+  @override
+  Widget build(BuildContext context) {
       return new MaterialApp(
         //title: 'Login page',
           home: new Scaffold(
@@ -156,30 +156,16 @@ class CreateAccountScreenState extends State<CreateAccountScreen>{
       );
     }
   void onPressed(BuildContext context) {
-    //Grab all of the form state and save it
     var form = formKey.currentState;
-
-    // run all of the validator functions and check if we are getting null like we want or our error
-    // if error then it will return false if null the return back true
     if (form.validate()) {
-      // goes through all onSaved functions and saves
       form.save();
-
-      // After text fields are saved make http request
       fetchData(context);
     }
   }
 
   Future<User> fetchData(BuildContext context) async {
-
-    print('hello');
-    //final response =await http.get('http://52.91.107.223:5000/user');
-
     final response = await http.get(
-        'endpoint/users');
-    //print(response.statusCode);
-    print('did I get this far');
-    print(response.statusCode);
+        'http://52.91.107.223:5000/users');
     if (response.statusCode == 200) {
       UserList userList = new UserList.fromJson(json.decode(response.body));
       int size = userList.users.length;
@@ -193,17 +179,12 @@ class CreateAccountScreenState extends State<CreateAccountScreen>{
         if(userList.users[i].user_id > id){
           id = userList.users[i].user_id;
         }
-        print(i);
         i++;
       }
       user_id = id.toString();
-      print(user_id);
-
-
       if(isValidEmail == false){
         print(email + 'is already in use, please enter a new email');
         print('NOT VALID EMAIL');
-
       }
       else{
         isValid = true;
@@ -218,28 +199,15 @@ class CreateAccountScreenState extends State<CreateAccountScreen>{
   }
 
   Future<HttpClientResponse> postData(BuildContext context) async {
-    print('FNAME: ' +fname);
-    print('LNAME: '+lname);
-    print('EMAIL: ' + email);
-    print('PASSWORD: ' + password);
-    print('POSTING DATA');
     final response = await http.post(
-        'endpoint/user?email=' + email+'&password=' + password+'&fname=' +fname+'&lname=' + lname);
-//    final response = await http.post(
-//        'http://52.91.107.223:5000/user?email=canhedoit@gmail.com&password=password+&fname=bob&lname=tha builder');
-    print(response.statusCode);
-    print('DID THE POST WORK FOR USER?');
+        'http://52.91.107.223:5000/user?email=' + email+'&password=' + password+'&fname=' +fname+'&lname=' + lname);
     if(apartment_number == ''){
       final response2 = await http.post(
           'http://52.91.107.223:5000/household?user_id='+user_id+'&street_address='+street_address+'&city='+city+'&state='+state+'&zip_code='+zip_code);
-      print(response2.statusCode);
-      print('DID THE POST WORK FOR HOUSE2?');
     } else {
       final response3 = await http.post(
-          'endpoint/household?user_id='+user_id+'&street_address='+
+          'http://52.91.107.223:5000/household?user_id='+user_id+'&street_address='+
               street_address+'&apartment_num=' + apartment_number+ '&city='+city+'&state='+state+'&zip_code='+zip_code);
-      print(response3.statusCode);
-      print('DID THE POST WORK FOR HOUSE3?');
     }
     Navigator.push(context,new MaterialPageRoute(builder: (context) => new LoginScreen()));
   }

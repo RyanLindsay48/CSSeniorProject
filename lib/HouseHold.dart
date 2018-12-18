@@ -10,9 +10,6 @@ class HouseHold {
   HouseHold(
       {this.household_id, this.street_address, this.apartment_num,this.state, this.city,this.zip_code});
 
-  //factory User.fromJson(Map<String, String> json) => _$UserFromJson(json);
-  //Map<String, String> toJson() => _$UserToJson(this);
-
   factory HouseHold.fromJson(Map<String, dynamic> json) {
     return HouseHold(
         apartment_num: json['apartment_num'],
@@ -23,6 +20,4 @@ class HouseHold {
         zip_code: json['zip_code']
     );
   }
-
-
 }

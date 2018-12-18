@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'HomeScreen.dart';
-import 'package:carousel_pro/carousel_pro.dart';
 import 'Picture.dart';
 import 'package:http/http.dart' as http;
 import 'Globals.dart' as globals;
@@ -22,17 +21,9 @@ class MostRecentExposureScreen extends StatelessWidget {
     this.mostRecentPi = mostRecentPi;
   }
 
-
-
   fetchUpdated(BuildContext context)async{
-    print('hello');
-    print('DID GLOBALS TRANSFER OVER?!?!?!?!?!?' + globals.userID.toString());
-    final response = await http.get('http://ec2-52-91-107-223.compute-1.amazonaws.com:5000/exposure/recent?id=' + globals.userID.toString()); //+globals.userID.toString());
-    print(response.statusCode);
-    print('did I get this far');
-    //print(response.bodyBytes.toString());
+    final response = await http.get('http://ec2-52-91-107-223.compute-1.amazonaws.com:5000/exposure/recent?id=' + globals.userID.toString());
     if (response.statusCode == 200) {
-      print(response.body);
       PictureList pics = new PictureList.fromJson(json.decode(response.body));
       var size = pics.pictures.length;
       List<Picture> photos = [];
@@ -45,11 +36,6 @@ class MostRecentExposureScreen extends StatelessWidget {
         mostRecentPi = pic.pi_id;
         pic.expo_id = garbage[5];
         pic.imageName = garbage[6];
-        print(pic.expo_id);
-        print(pic.pi_id);
-        print(pic.imageName);
-        print(pic);
-        print(photos);
         photos.add(pic);
       }
       Navigator.push(context,new MaterialPageRoute(builder: (context) => new MostRecentExposureScreen(photos, mostRecentPi)));
@@ -61,10 +47,8 @@ class MostRecentExposureScreen extends StatelessWidget {
   }
 
   putUpdate()async {
-    print('Most Recent Pi is: ' + mostRecentPi);
     final response = await http.put('http://52.91.107.223:5000/pi/reset?pi_id='  + mostRecentPi +
         '&value=1');
-    print(response.statusCode);
   }
 
   buildCells(int length) {
@@ -104,12 +88,19 @@ class MostRecentExposureScreen extends StatelessWidget {
                 ]
             ),
             body:  GridView.count(
-              crossAxisSpacing: 5.0,
-              padding: const EdgeInsets.all(5.0),
+              crossAxisSpacing: 12.0,
+              mainAxisSpacing: 1.3,
+              childAspectRatio: 1.60,
+              padding: const EdgeInsets.all(10.0),
               crossAxisCount: 2,
               children: buildCells(myPhotos.length),
-
             ),
+//            body:  GridView.extent(
+//              crossAxisSpacing: 2.0,
+//              mainAxisSpacing: 1.0,
+//              padding: const EdgeInsets.all(3.0),
+//              children: buildCells(myPhotos.length),
+//            ),
             bottomNavigationBar: new Container(
                 child: RaisedButton(
                   child: Text('Reset Camera'),
@@ -118,10 +109,7 @@ class MostRecentExposureScreen extends StatelessWidget {
                 )
             )
         ),
-
     );
   }
-
-
 }
 

@@ -2,8 +2,6 @@ import 'PiExposuresScreen.dart';
 import 'Exposure.dart';
 import 'Pi.dart';
 import 'package:flutter/material.dart';
-import 'package:carousel_pro/carousel_pro.dart';
-
 import 'Picture.dart';
 
 class ShowExposureScreen extends StatelessWidget {
@@ -46,7 +44,7 @@ class ShowExposureScreen extends StatelessWidget {
         title: 'Image captures screen',
         home: new Scaffold(
             appBar: new AppBar(
-                title: new Text(piName +'Exposures from'),
+                title: new Text(piName +' Exposures'),
                 leading: IconButton(
                     icon: Icon(Icons.arrow_back),
                     tooltip: 'Back to home screen',
@@ -57,11 +55,13 @@ class ShowExposureScreen extends StatelessWidget {
                       );
             })),
             body:  GridView.count(
-                      crossAxisSpacing: 5.0,
-                      padding: const EdgeInsets.all(5.0),
-                      crossAxisCount: 2,
-                      children: buildCells(myPhotos.length),
-            ),
+                crossAxisSpacing: 12.0,
+                mainAxisSpacing: 1.3,
+                childAspectRatio: 1.60,
+                padding: const EdgeInsets.all(10.0),
+                crossAxisCount: 2,
+                children: buildCells(myPhotos.length),
+          ),
         )
       );
   }
