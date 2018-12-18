@@ -13,8 +13,7 @@ def motion_detected():
 
                 # If the sensor is reporting HIGH then it detects motion
                 if mode == 1:
-                        #print 'Intruder detected!'
-                        return
+                        return # Allows the program in main.py to continue
                 sleep(0.1)
 
 
