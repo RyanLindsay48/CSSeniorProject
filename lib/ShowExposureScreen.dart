@@ -4,6 +4,10 @@ import 'Pi.dart';
 import 'package:flutter/material.dart';
 import 'Picture.dart';
 
+/**
+* The ShowExposureScreen Class is used to show the user a list of images from a specific exposure. It also lets the user navigate back
+* to the PiExposuresScreen.
+*/ 
 class ShowExposureScreen extends StatelessWidget {
   List<Picture> photos =[];
 
@@ -23,7 +27,9 @@ class ShowExposureScreen extends StatelessWidget {
     this.piName = piName;
     this.pis = pis;
   }
-
+  /**
+  * The buildCells method is used to build Containers that contain images from the user's most recent exposure.
+  */
   buildCells(int length) {
     List<Container> cells = new List<Container>.generate(length,(int index) {
       return new Container(
@@ -32,7 +38,10 @@ class ShowExposureScreen extends StatelessWidget {
     });
     return cells;
   }
-
+  /**
+  * This screen uses a gridView to show each of picture associated to an exposure. It also has a back button that allows the
+  * user to navigate back to the PiExposuresScreen.
+  */ 
   @override
   Widget build(BuildContext context) {
     for(Picture image in photos){
