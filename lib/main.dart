@@ -33,6 +33,7 @@ void main() async {
   It includes text fields for username and password.
   It includes a button to login to the home screen as well as links to create an
   account or reset you password
+  ForgotPasswordScreen is also not created yet. (line 59)
  */
 
 class LoginScreen extends StatefulWidget {
@@ -50,7 +51,7 @@ class LoginScreenState extends State<LoginScreen> {
     // initialise the plugin. app_icon needs to be a added as a drawable resource to the Android head project
     // If you have skipped STEP 3 then change app_icon to @mipmap/ic_launcher
     var initializationSettingsAndroid =
-    new AndroidInitializationSettings('@mipmap/ic_launcher');
+        new AndroidInitializationSettings('@mipmap/ic_launcher');
     var initializationSettingsIOS = new IOSInitializationSettings();
     var initializationSettings = new InitializationSettings(
         initializationSettingsAndroid, initializationSettingsIOS);
@@ -64,7 +65,6 @@ class LoginScreenState extends State<LoginScreen> {
       debugPrint('notification payload: ' + payload);
     }
     await fetchPhotos(context);
-
   }
 
   Future showNotification() async {
@@ -81,7 +81,9 @@ class LoginScreenState extends State<LoginScreen> {
 
   fetchPhotos(BuildContext context) async {
     final response = await http.get(
-        'http://ec2-52-91-107-223.compute-1.amazonaws.com:5000/exposure/recent?id='+globals.userID.toString());
+        'http://ec2-52-91-107-223.compute-1.amazonaws.com:5000/exposure/recent?id=' +
+            globals.userID.toString());
+    //print(response.bodyBytes.toString());
     if (response.statusCode == 200) {
       PictureList pics = new PictureList.fromJson(json.decode(response.body));
       var size = pics.pictures.length;
@@ -98,7 +100,8 @@ class LoginScreenState extends State<LoginScreen> {
       Navigator.push(
           context,
           new MaterialPageRoute(
-              builder: (context) => new MostRecentExposureScreen(photos, mostRecentPi)));
+              builder: (context) =>
+                  new MostRecentExposureScreen(photos, mostRecentPi)));
     }
   }
 
@@ -129,7 +132,7 @@ class LoginScreenState extends State<LoginScreen> {
                       TextFormField(
                           autocorrect: false,
                           decoration:
-                          InputDecoration(labelText: 'Email Address'),
+                              InputDecoration(labelText: 'Email Address'),
                           validator: (text) => !text.contains('@')
                               ? 'Not a Valid Email address'
                               : null,
@@ -139,11 +142,11 @@ class LoginScreenState extends State<LoginScreen> {
                             email = text;
                           }),
                       TextFormField(
-                        //controller: pass,
+                          //controller: pass,
                           obscureText: true,
                           decoration: InputDecoration(labelText: 'Password'),
                           validator: (text) =>
-                          text.length < 4 ? 'Not a Valid Password' : null,
+                              text.length < 4 ? 'Not a Valid Password' : null,
                           //Entered password is assigned to global email variable
                           onSaved: (text) {
                             pass = text;
@@ -185,11 +188,9 @@ class LoginScreenState extends State<LoginScreen> {
   // Fetch a JSON document that contains a user object
   // from the REST API using the http.get method.
   Future<User> fetchUser(http.Client client) async {
+    //Call http get method to REST API endpoint
     final response =
-    await http.get('http://52.91.107.223:5000/user/login?email=' + email);
-
-    print(response.statusCode);
-    print('did I get this far');
+        await http.get('http://52.91.107.223:5000/user/login?email=' + email);
 
     if (response.statusCode == 200) {
       // Connection Successful
@@ -208,7 +209,11 @@ class LoginScreenState extends State<LoginScreen> {
         email = curUser.email_address;
         pass = curUser.password;
 
-        final response = await http.get('http://ec2-52-91-107-223.compute-1.amazonaws.com:5000/user/household?user_id=' + globals.userID.toString()); 
+        final response = await http.get(
+            'http://ec2-52-91-107-223.compute-1.amazonaws.com:5000/user/household?user_id=' +
+                globals.userID.toString());
+
+        //print(response.bodyBytes.toString());
         if (response.statusCode == 200) {
           HouseHold house = new HouseHold.fromJson(json.decode(response.body));
           globals.household_id = house.household_id;
@@ -217,15 +222,14 @@ class LoginScreenState extends State<LoginScreen> {
           globals.state = house.state;
           globals.city = house.city;
           globals.zip_code = house.zip_code;
-        }
-        else {
+        } else {
           throw Exception('Failed to get household info');
         }
 
         flutterLocalNotificationsPlugin = new FlutterLocalNotificationsPlugin();
 
         //ten second duration timer
-        const tenSec = const Duration(seconds: 10);
+        const tenSec = const Duration(seconds: 30);
 
         void checkAndFetch() {
           if (globals.isLoggedIn) {
@@ -250,7 +254,6 @@ class LoginScreenState extends State<LoginScreen> {
     }
   }
 
-
   // Fetch the updated variable
   Future fetchUserUpdated(http.Client client) async {
     final response = await http.get(
@@ -270,7 +273,7 @@ class LoginScreenState extends State<LoginScreen> {
 
         // set gobal and curUser updated variables back to 0
         globals.updated = 0;
-        curUser.updated = 0;
+        //curUser.updated = 0;
 
         // Set updated variable in database back to 0
         final response = await http.put(
@@ -284,4 +287,3 @@ class LoginScreenState extends State<LoginScreen> {
       throw Exception('Failed to load post');
     }
   }
-}
