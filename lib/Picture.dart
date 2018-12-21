@@ -1,3 +1,7 @@
+/**
+* The Picture class is used to create a Picture object. It stores the pictures imageName, its pi_id and expo_id.
+*/ 
+
 class Picture {
   String imageName;
   String pi_id;
