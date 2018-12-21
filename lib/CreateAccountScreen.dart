@@ -19,7 +19,7 @@ class CreateAccountScreen extends StatefulWidget {
 /**
  * The CreateAccountScreenState is State for the CreateAccountScreen. This class takes all of the users entered info and sends it
  * back to the server. If the email entered in by the user is unique, and all of the required fields are entered in correctly
- * the account gets added to the database. 
+ * the account gets added to the database.
  */
 class CreateAccountScreenState extends State<CreateAccountScreen> {
   static String fname = '';
@@ -63,14 +63,14 @@ class CreateAccountScreenState extends State<CreateAccountScreen> {
                   key: formKey,
                   child: ListView(children: <Widget>[
                     TextFormField(
-                        decoration: new InputDecoration(labelText: 'firstname'),
+                        decoration: new InputDecoration(labelText: 'Firstname'),
                         validator: (text) =>
                             text == '' ? 'FirstName is Required!' : null,
                         onSaved: (text) {
                           fname = text;
                         }),
                     TextFormField(
-                        decoration: new InputDecoration(labelText: 'lastname'),
+                        decoration: new InputDecoration(labelText: 'Lastname'),
                         validator: (text) =>
                             text == '' ? 'Last Name is Required!' : null,
                         onSaved: (text) {
@@ -78,7 +78,7 @@ class CreateAccountScreenState extends State<CreateAccountScreen> {
                         }),
                     TextFormField(
                         decoration:
-                            new InputDecoration(labelText: 'email address'),
+                            new InputDecoration(labelText: 'Email Address'),
                         validator: (text) =>
                             text == '' ? 'Invalid Email address!' : null,
                         onSaved: (text) {
@@ -144,29 +144,28 @@ class CreateAccountScreenState extends State<CreateAccountScreen> {
                   ]),
                 ))));
   }
+  
   /**
-  * The onPressed method is used to validate the TextForm fields that populate the Widget of this screen
-  */
+   * The onPressed method is used to validate the TextForm fields that populate the Widget of this screen
+   */
   void onPressed(BuildContext context) {
     print('Button has been pressed about to validate');
     var form = formKey.currentState;
+    form.save();
     if (form.validate()) {
-      print('From Validated');
-      form.save();
+      print('Form Validated');
       fetchData(context);
     } else {
       print('unable to validate');
     }
   }
-  /**
-  * The FetchData method is used to see if the user is already in the database. We request the whole list of users 
-  * and loop through the list to check if the email address is located in that list.
-  */
+   /**
+   * The FetchData method is used to see if the user is already in the database. We request the whole list of users
+   * and loop through the list to check if the email address is located in that list.
+   */
   Future<User> fetchData(BuildContext context) async {
     final response = await http.get('http://52.91.107.223:5000/users');
-    print(response.statusCode);
     if (response.statusCode == 200) {
-      print('create account fetch data successful connection');
       UserList userList = new UserList.fromJson(json.decode(response.body));
       int size = userList.users.length;
       int i = 0;
@@ -176,8 +175,8 @@ class CreateAccountScreenState extends State<CreateAccountScreen> {
         if (userList.users[i].email_address == email) {
           isValidEmail = false;
         }
-        if (userList.users[i].user_id > id) {
-          id = userList.users[i].user_id;
+        if (userList.users[i].user_id >= id) {
+          id = userList.users[i].user_id + 1;
         }
         i++;
       }
@@ -187,19 +186,19 @@ class CreateAccountScreenState extends State<CreateAccountScreen> {
         print('NOT VALID EMAIL');
       } else {
         isValid = true;
-        postData(context);
         print('VALID EMAIL CAN IT POST?');
-        print(response.body);
+        postData(context);
       }
     } else {
       throw Exception('Failed to load post');
     }
   }
+  
   /**
-  * The postData method is used to put the user and their home information into the database. 
-  * Once the user is entered into the database the user will be redirected back to the Login Screen
-  * to login to the app.
-  */
+   * The postData method is used to put the user and their home information into the database.
+   * Once the user is entered into the database the user will be redirected back to the Login Screen
+   * to login to the app.
+   */
   Future<HttpClientResponse> postData(BuildContext context) async {
     final response = await http.post('http://52.91.107.223:5000/user?email=' +
         email +
