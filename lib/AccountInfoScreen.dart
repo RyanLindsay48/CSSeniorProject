@@ -2,6 +2,10 @@ import 'package:flutter/material.dart';
 import 'HomeScreen.dart';
 import 'Globals.dart' as globals;
 
+/**
+* The AccountInfo Screen is used to show all of the user's information. It also has a back button that redirects the user
+* back to the HomeScreen
+*/
 class AccountInfoScreen extends StatelessWidget {
 
   @override
