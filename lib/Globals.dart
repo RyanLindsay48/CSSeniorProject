@@ -1,5 +1,8 @@
 library actualhousehawk.globals;
-
+  /**
+  * The Globals.dart file is used to store all of the users information so it is accessible everywhere
+  * throughout the application.
+  */
   String fName;
   String lName;
   String emailAddress;
