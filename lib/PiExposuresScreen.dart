@@ -11,6 +11,11 @@ import 'package:http/http.dart' as http;
 import 'HouseHoldCamerasScreen.dart';
 import 'TimeStampFormatter.dart';
 
+/**
+* The PiExposuresScreen class is used to show all of the exposures assoicated with a specific camera
+* Each exposure is shown on a button with its time stamp. The  user will also be able to navigate back to 
+* the HouseHoldCamerasScreen.
+*/
 class PiExposuresScreen extends StatelessWidget {
   List<Exposure> exposures = [];
   String piName;
@@ -21,7 +26,9 @@ class PiExposuresScreen extends StatelessWidget {
     this.piName = piName;
     this.pis = pis;
   }
-
+  /**
+  * The createButtons method is used to create a list of buttons for each exposure assoicated to a specific camera.
+  */
   createButtons(int size, BuildContext context){
     size = exposures.length;
     print(size);
@@ -37,7 +44,13 @@ class PiExposuresScreen extends StatelessWidget {
     }
     return buttons;
   }
-
+  /**
+    * The fetchPhotos method is used to get all of the users most recent exposures.
+    * It decodes the json file and stores the information in a PictureList.
+    * It then loops through the Picture List and stores each Picture from that picture list as a picture object in a List.
+    * It then navigates to the ShowExposureScreen where it passes the List of Pictures, the list of pis associated with
+    * the camera that took these pictures, the name of the camera and the list of cameras associated with the user.
+    */
   Future<File> fetchPhotos(BuildContext context, int exposure_id) async {
     final response = await http.get('http://ec2-52-91-107-223.compute-1.amazonaws.com:5000/exposure/pictures?expo_id=' + exposure_id.toString());
     if (response.statusCode == 200) {
@@ -60,7 +73,11 @@ class PiExposuresScreen extends StatelessWidget {
       throw Exception('Failed to load images');
     }
   }
-
+  /**
+  * The layout used for this screen was a listView where each element inside the list was a button that displayed a timestamp for 
+  * that exposure. When the user clicks on one of the exposures it redirects them to the ShowExposuresScreen. The user can also navigate
+  * back to the HouseHoldCamerasScreen
+  */
   @override
   Widget build(BuildContext context) {
     return new MaterialApp(
