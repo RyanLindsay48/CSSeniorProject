@@ -287,3 +287,4 @@ class LoginScreenState extends State<LoginScreen> {
       throw Exception('Failed to load post');
     }
   }
+}
