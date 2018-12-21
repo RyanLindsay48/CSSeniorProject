@@ -6,7 +6,11 @@ import 'Globals.dart' as globals;
 import 'PictureList.dart';
 import 'dart:convert';
 
-
+/**
+* The MostRecentExposuresScreen class is used to show the users most recent exposures. It also has the ability to refresh the list
+* of exposures just in case the users camera was still taking pictures by the time the user clicked on the push notification. The user 
+* can also reset their camera so it stops taking pictures and they may also navigate back to the HomeScreen
+*/
 class MostRecentExposureScreen extends StatelessWidget {
   List<Picture> photos =[];
   String endpointBegin = 'http://ec2-52-91-107-223.compute-1.amazonaws.com:5000/exposure/picture?expo_id=';
@@ -20,7 +24,11 @@ class MostRecentExposureScreen extends StatelessWidget {
     this.photos = photos;
     this.mostRecentPi = mostRecentPi;
   }
-
+  /**
+  * The fetchUpdated method is used to refresh the list of pictuers that are associated to the user's most recent exposures.
+  * This method decodes a json file and converts that file into a PictureList Object. The page then reloads with the updated list
+  * of pictures for the user to see.
+  */
   fetchUpdated(BuildContext context)async{
     final response = await http.get('http://ec2-52-91-107-223.compute-1.amazonaws.com:5000/exposure/recent?id=' + globals.userID.toString());
     if (response.statusCode == 200) {
@@ -45,12 +53,16 @@ class MostRecentExposureScreen extends StatelessWidget {
       throw Exception('Failed to load images');
     }
   }
-
+  /**
+  * The putUpdate method is used for the Reset Camera button. It resets the camera so it stops taking pictures.
+  */
   putUpdate()async {
     final response = await http.put('http://52.91.107.223:5000/pi/reset?pi_id='  + mostRecentPi +
         '&value=1');
   }
-
+  /**
+  * The buildCells method is used to build Containers that contain images from the user's most recent exposure.
+  */
   buildCells(int length) {
     List<Container> cells = new List<Container>.generate(length,(int index) {
       return new Container(
@@ -59,9 +71,14 @@ class MostRecentExposureScreen extends StatelessWidget {
     });
     return cells;
   }
-
+  /**
+  * The layout used on this screen was a Grid Layout that displays each picture from the user's most recent
+  * exposures. It also contains a button that resets the camera, a button that refreshes the screen so the user can
+  * see if they have any more pictures to be seen and a back button that navigates back to the HomeScreen.
+  */
   @override
   Widget build(BuildContext context) {
+    //For loop used to load images
     for(Picture image in photos){
       String str = endpointBegin + image.getExposure() + pi_id + image.getPI() + imageName + image.getImageName() ;
       myPhotos.add(new NetworkImage(str));
@@ -95,12 +112,6 @@ class MostRecentExposureScreen extends StatelessWidget {
               crossAxisCount: 2,
               children: buildCells(myPhotos.length),
             ),
-//            body:  GridView.extent(
-//              crossAxisSpacing: 2.0,
-//              mainAxisSpacing: 1.0,
-//              padding: const EdgeInsets.all(3.0),
-//              children: buildCells(myPhotos.length),
-//            ),
             bottomNavigationBar: new Container(
                 child: RaisedButton(
                   child: Text('Reset Camera'),
