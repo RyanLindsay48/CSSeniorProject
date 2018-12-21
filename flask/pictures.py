@@ -15,17 +15,18 @@ class Pictures(db.Model):
 	__tablename__ = 'pictures'
 
 	picture_id = Column(SMALLINT(unsigned=True), nullable=False, primary_key=True)
+	#exposure_id = Column(SMALLINT(unsigned=True), nullable=False)
 	timestamp = Column(TIMESTAMP, nullable=False)
 	filepath = Column(String(50), nullable=False)
 
 	exposure = relationship("Exposures", secondary="exposures_pictures", viewonly=True)
 
-	def __init__(self):
+	def __init__(self, filepath):
 		self.timestamp = datetime.today()
 		#Should exposures have a filepath and that just gets grabbed from there?
-		self.filepath = ""
+		self.filepath = filepath
 
 
 class PicturesSchema(ma.Schema):
 	class Meta:
-		fields = ('picture_id', 'timestamp', 'filename')
+		fields = ('picture_id', 'timestamp', 'filepath')
