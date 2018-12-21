@@ -14,9 +14,6 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
-//This is where that app begins to run
-//void main() => runApp(HouseHawk());
-
 var flutterLocalNotificationsPlugin;
 
 void main() async {
@@ -36,7 +33,6 @@ void main() async {
   It includes text fields for username and password.
   It includes a button to login to the home screen as well as links to create an
   account or reset you password
-  ForgotPasswordScreen is also not created yet. (line 59)
  */
 
 class LoginScreen extends StatefulWidget {
@@ -84,32 +80,19 @@ class LoginScreenState extends State<LoginScreen> {
   }
 
   fetchPhotos(BuildContext context) async {
-    print('hello');
-    print(globals.userID.toString());
     final response = await http.get(
         'http://ec2-52-91-107-223.compute-1.amazonaws.com:5000/exposure/recent?id='+globals.userID.toString());
-    print(response.statusCode);
-    print('did I get this far');
-    //print(response.bodyBytes.toString());
     if (response.statusCode == 200) {
-      print(response.body);
       PictureList pics = new PictureList.fromJson(json.decode(response.body));
       var size = pics.pictures.length;
       List<Picture> photos = [];
       for (int i = 0; i < size; i++) {
-        print(pics.pictures[i].filepath);
         List<String> garbage = pics.pictures[i].filepath.split('/');
-        print(garbage[6]);
         Picture pic = new Picture();
         pic.pi_id = garbage[4];
         mostRecentPi = pic.pi_id;
         pic.expo_id = garbage[5];
         pic.imageName = garbage[6];
-        print(pic.expo_id);
-        print(pic.pi_id);
-        print(pic.imageName);
-        print(pic);
-        print(photos);
         photos.add(pic);
       }
       Navigator.push(
@@ -202,14 +185,6 @@ class LoginScreenState extends State<LoginScreen> {
   // Fetch a JSON document that contains a user object
   // from the REST API using the http.get method.
   Future<User> fetchUser(http.Client client) async {
-    print('hello');
-    print('fname is: $fName'); // Should be null here
-    print('lname is: $lName'); // Should be null here
-    print('email is: $email'); // Should be the entered email here
-    print('password is: $pass'); // Should be the entered pass here
-
-    //Call http get method to REST API endpoint
-    print('about to run http.get');
     final response =
     await http.get('http://52.91.107.223:5000/user/login?email=' + email);
 
@@ -218,15 +193,10 @@ class LoginScreenState extends State<LoginScreen> {
 
     if (response.statusCode == 200) {
       // Connection Successful
-      print('Connection Successful');
-      print(response.body);
-
       //  user object to hold all of the json data
       curUser = User.fromJson(json.decode(response.body));
 
       if (curUser.email_address == email && curUser.password == pass) {
-        print('User successfully logged in');
-
         // setting global variables
         globals.isLoggedIn = true;
         globals.fName = curUser.fname;
@@ -238,12 +208,8 @@ class LoginScreenState extends State<LoginScreen> {
         email = curUser.email_address;
         pass = curUser.password;
 
-        final response = await http.get('http://ec2-52-91-107-223.compute-1.amazonaws.com:5000/user/household?user_id=' + globals.userID.toString()); //+globals.userID.toString());
-        print(response.statusCode);
-        print('did I get this far');
-        //print(response.bodyBytes.toString());
+        final response = await http.get('http://ec2-52-91-107-223.compute-1.amazonaws.com:5000/user/household?user_id=' + globals.userID.toString()); 
         if (response.statusCode == 200) {
-          print(response.body);
           HouseHold house = new HouseHold.fromJson(json.decode(response.body));
           globals.household_id = house.household_id;
           globals.street_address = house.street_address;
@@ -255,21 +221,6 @@ class LoginScreenState extends State<LoginScreen> {
         else {
           throw Exception('Failed to get household info');
         }
-
-
-        // printing global variables
-        print('Printing all globals');
-        print('fName: ' + globals.fName);
-        print('lName: ' + globals.lName);
-        print('email: ' + globals.emailAddress);
-        print('pass: ' + globals.password);
-        print('userID: ' + globals.userID.toString());
-        print('Printing all globals for household info');
-        print('household_id: ' + globals.household_id.toString());
-        print('street_adress: ' + globals.street_address);
-        print('city: ' + globals.city);
-        print('state: ' + globals.state);
-        print('zip_code: ' + globals.zip_code);
 
         flutterLocalNotificationsPlugin = new FlutterLocalNotificationsPlugin();
 
@@ -295,7 +246,6 @@ class LoginScreenState extends State<LoginScreen> {
       return curUser;
     } else {
       // Unsuccessful connection
-      print('Didnt work, Unsuccessful connection');
       throw Exception('Failed to load post');
     }
   }
@@ -303,25 +253,16 @@ class LoginScreenState extends State<LoginScreen> {
 
   // Fetch the updated variable
   Future fetchUserUpdated(http.Client client) async {
-    print('about to run http.get user/updated');
     final response = await http.get(
         'http://52.91.107.223:5000/user/updated?user_id=' +
             globals.userID.toString());
 
-    print('status code ' + response.statusCode.toString());
-
     if (response.statusCode == 200) {
       // Connection Successful
-      print('Connection Successful');
-      print('response body is: ' + response.body);
-
       // printing 'updated' global variable
 
       curUser = User.fromJson(json.decode(response.body));
       globals.updated = curUser.updated;
-
-      print('updated global is: ' + globals.updated.toString());
-      print("Cur user updated is: " + curUser.updated.toString());
 
       if (globals.updated == 1) {
         sleep(const Duration(seconds: 5));
@@ -340,7 +281,6 @@ class LoginScreenState extends State<LoginScreen> {
       }
     } else {
       // Unsuccessful connection
-      print('Didnt work, Unsuccessful connection');
       throw Exception('Failed to load post');
     }
   }
