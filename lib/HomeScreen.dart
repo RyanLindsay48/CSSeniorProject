@@ -12,8 +12,19 @@ import 'PiList.dart';
 import 'main.dart';
 import 'AddCamera.dart';
 
+/**
+* The HomeScreen is used to help the user navigate throughout the app. On this screen the user will be able to
+* navigate to: all of their cameras, their most recent exposures and their account information. The user will also
+* be able to sign out of the application.
+*/
 class HomeScreen extends StatelessWidget {
     var mostRecentPi = '';
+    /**
+    * The fetchPhotos method is used to get all of the users most recent exposures.
+    * It decodes the json file and stores the information in a PictureList.
+    * It then loops through the Picture List and stores each Picture from that picture list as a picture object in a List.
+    * It then navigates to the MostRecentExposureScreen where it passes the List of Pictures and the mostRecentPi
+    */
     fetchPhotos(BuildContext context) async {
       final response = await http.get('http://ec2-52-91-107-223.compute-1.amazonaws.com:5000/exposure/recent?id=' + globals.userID.toString()); //+globals.userID.toString());
       if (response.statusCode == 200) {
@@ -33,11 +44,14 @@ class HomeScreen extends StatelessWidget {
         Navigator.push(context,new MaterialPageRoute(builder: (context) => new MostRecentExposureScreen(photos, mostRecentPi)));
       }
       else {
-        print('Cannot recieve photos');
         throw Exception('Failed to load images');
       }
   }
-
+    /**
+    * The fetchUserPis Class is used to get all of the cameras associate to a user.
+    * It requests the list of cameras associated to that user and then decodes that json file into a PiList which is a list of Pi Objects
+    * It then navigates to the HouseHoldCamerasScreen and the list of Pi objects gets passed into it.
+    */
     fetchUserPis(BuildContext context) async {
       final response = await http.get(
           'http://52.91.107.223:5000/user/pis?id=' + globals.userID.toString());//+globals.userID.toString());
@@ -52,11 +66,12 @@ class HomeScreen extends StatelessWidget {
         Navigator.push(context,new MaterialPageRoute(builder: (context) => new HouseHoldCamerasScreen(pis)));
       }
       else {
-        print('Cannot recieve photos');
         throw Exception('Failed to load images');
       }
     }
-
+   /**
+   * The layout used for the screen is a listView of buttons.
+   */
   @override
   Widget build(BuildContext context) {
     return new MaterialApp(
