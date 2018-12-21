@@ -9,7 +9,6 @@ import 'Pi.dart';
 import 'Exposure.dart';
 import 'package:http/http.dart' as http;
 import 'HouseHoldCamerasScreen.dart';
-import 'TimeStampFormatter.dart';
 
 /**
 * The PiExposuresScreen class is used to show all of the exposures assoicated with a specific camera
@@ -35,10 +34,7 @@ class PiExposuresScreen extends StatelessWidget {
     List<RaisedButton> buttons = [];
     for(int i = 0; i < size; i++){
       var triggerTime = exposures[i].start_time;
-      String date = triggerTime.substring(0,10);
-      String time = triggerTime.substring(11,triggerTime.length);
-      buttons.add(RaisedButton(child: Text(TimeStampFormatter.getFormattedDate(date) +
-               ' at: ' + TimeStampFormatter.getFormattedTime(time)),
+      buttons.add(RaisedButton(child: Text(triggerTime),
         onPressed: ()=> fetchPhotos(context, exposures[i].exposures_id),
       ));
     }
