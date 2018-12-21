@@ -1,3 +1,6 @@
+/**
+* The TimeStampFormatter class is used to format the timestrings that are associated to an exposure.
+*/
 class TimeStampFormatter{
   String dateString;
   String timeString;
