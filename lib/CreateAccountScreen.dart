@@ -16,7 +16,11 @@ class CreateAccountScreen extends StatefulWidget {
   @override
   CreateAccountScreenState createState() => CreateAccountScreenState();
 }
-
+/**
+ * The CreateAccountScreenState is State for the CreateAccountScreen. This class takes all of the users entered info and sends it
+ * back to the server. If the email entered in by the user is unique, and all of the required fields are entered in correctly
+ * the account gets added to the database. 
+ */
 class CreateAccountScreenState extends State<CreateAccountScreen> {
   static String fname = '';
   static String lname = '';
@@ -140,7 +144,9 @@ class CreateAccountScreenState extends State<CreateAccountScreen> {
                   ]),
                 ))));
   }
-
+  /**
+  * The onPressed method is used to validate the TextForm fields that populate the Widget of this screen
+  */
   void onPressed(BuildContext context) {
     print('Button has been pressed about to validate');
     var form = formKey.currentState;
@@ -152,7 +158,10 @@ class CreateAccountScreenState extends State<CreateAccountScreen> {
       print('unable to validate');
     }
   }
-
+  /**
+  * The FetchData method is used to see if the user is already in the database. We request the whole list of users 
+  * and loop through the list to check if the email address is located in that list.
+  */
   Future<User> fetchData(BuildContext context) async {
     final response = await http.get('http://52.91.107.223:5000/users');
     print(response.statusCode);
@@ -186,7 +195,11 @@ class CreateAccountScreenState extends State<CreateAccountScreen> {
       throw Exception('Failed to load post');
     }
   }
-
+  /**
+  * The postData method is used to put the user and their home information into the database. 
+  * Once the user is entered into the database the user will be redirected back to the Login Screen
+  * to login to the app.
+  */
   Future<HttpClientResponse> postData(BuildContext context) async {
     final response = await http.post('http://52.91.107.223:5000/user?email=' +
         email +
